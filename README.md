@@ -1,5 +1,5 @@
 # Liquid-Check
-Documentation and Fhem Modul for the "Liquid-Check" levelsensor
+Documentation and Fhem Modul for the "Liquid-Check" Levelsensor
 <p>
 liquid_check_doku.pdf       <tab>- Documentation of the "Liquid-Check" Levelsensor device
 <p>  
