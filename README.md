@@ -8,7 +8,7 @@ liquid_check_doku.pdf       <tab>- Documentation of the "Liquid-Check" Levelsens
 <p>  
 icons.rar                   - this icons are the default icons for the fhem-modul 24_SI_Liquid_Check.pm<br>
   unpack this icons to /opt/fhem/www/images/default/sidev/fuellstand/                              
-
+<p>
 <br>
 <h3>Helpfile SI_Liquid_Check.pm EN</h3>
 
@@ -35,9 +35,9 @@ icons.rar                   - this icons are the default icons for the fhem-modu
 	udp broadcast call. 
 	<p>
   <b>Attributs</b>
-	<ul>
-		<li><b>interval</b>: The interval in seconds, after which FHEM will update the current measurements. Default: 3600 Sec.(1 hour)</li>
-			An update of the measurements is also done on each "get sensor_lesen" as well.
+	
+		<li><b>interval</b>: The interval in seconds, after which FHEM will update the current measurements. Default: 3600 Sec.<br>
+			An update of the measurements is also done on each "get sensor_lesen" as well.</li>
 		<p>
 		<li><b>timeout</b>:  Timeout in seconds used while finding the ip/Adress of the Sensor. Default: 1s</li>
 			<i>Warning:</i>: the timeout of 1s is chosen fairly aggressive. It could lead to errors, if the Sensor is not answerings the requests
@@ -47,14 +47,14 @@ icons.rar                   - this icons are the default icons for the fhem-modu
 			<i>Warning: if your Liquid-Check is not on or not connected to the wifi network, consider disabling this module
 			by the attribute "disable". Otherwise the cyclic update of the Sensor seek funktion will lead to blockings in FHEM.</i>
 		<p>
-		<li><b>devStateIcPaNa=sidev/fuellstand/fill_level_*</b>:<br>
+		<li><b>devStateIcPaNa=sidev/fuellstand/fill_level_\*</b>:<br>
 		The path and name of an "Extend devStateIcon" instead of the percentage (0, 10, 20, .. 100) is given a "*". The path
 		is specified starting from the standard icon path "/ opt / fhem / www / images / default /" (Fhem Raspi installation).
 		<p>
 		<li><b>devStateIcon={SI_Liquid_Check_devStateIcon($name)}</b>:
 		Predefined function for representing values and state icon together.
 		
-	</ul>
+
   <p>
   <b>Requirements</b>
 	<ul>
@@ -92,7 +92,7 @@ icons.rar                   - this icons are the default icons for the fhem-modu
 	<br><br>
   <p>
   <b>Attribute</b>
-	<ul>
+	
 		<li><b>interval</b>: Das Intervall in Sekunden, nach dem FHEM die Messwerte aktualisiert. Default: 3600 Sek.(1 Std.)</li>
 			Eine Aktualisierung der Messwerte findet auch bei jedem "get sensor_lesen" über die "non-blocking" Methode statt.
 		<p>
@@ -106,13 +106,13 @@ icons.rar                   - this icons are the default icons for the fhem-modu
 			dieses FHEM-Modul per Attribut "disable" abschalten, da sonst beim zyklischen Suchen der ip/Adresse
 			des Sensors Timeouts auftreten, die FHEM unnötig verlangsamen.</i>
 		<p>
-		<li><b>devStateIcPaNa=sidev/fuellstand/fill_level_*</b>:<br> 
+		<li><b>devStateIcPaNa=sidev/fuellstand/fill_level_**</b>:<br> 
 		Pfad und Name eines "Extend devStateIcon" anstatt des Prozentwertes (0 ,10, 20..100) wird ein "*" angegeben. Der Pfad 
 		ist ausgehend vom Standard Icon Pfad "/opt/fhem/www/images/default/"(Fhem Raspi-Installation) angegeben.
 		<p>
 		<li><b>devStateIcon={SI_Liquid_Check_devStateIcon($name)}</b>:<br>
 		Vordefinierte Funktion, damit Messwerte und State Icon zusammen dargestellt werden.
-	</ul>
+
   <p>
   <b>Requirements</b>
 	<ul>
