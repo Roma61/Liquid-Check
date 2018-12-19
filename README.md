@@ -10,3 +10,4 @@ icons.rar                   - this icons are the default icons for the fhem-modu
   unpack this icons to /opt/fhem/www/images/default/sidev/fuellstand/                              
 <p>
 <br>
+Weitere Infos folgen
