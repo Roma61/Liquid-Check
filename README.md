@@ -5,7 +5,7 @@
   
 - 24_SI_Liquid_Check.pm       - Fhem Modul for easy integration of the Levelsensor copy this module to fhem /opt/fhem/FHEM/  (Fhem Raspi-Installation)
   
-- icons.rar                   - this icons are the default icons for the fhem-modul 24_SI_Liquid_Check.pm unpack this icons to /opt/fhem/www/images/default/sidev/fuellstand/                              
+- icons.rar                   - this icons are the default icons for the fhem-modul 24_SI_Liquid_Check.pm unpack this icons to /opt/fhem/www/images/default/                        
 
 
 ## Übersicht
