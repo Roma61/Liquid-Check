@@ -13,8 +13,8 @@
 
 ## Übersicht Geräte
 
-![](https://raw.githubusercontent.com/roma61/Liquid-Check/master/Uebersichtrouter.jpg)
+[](https://raw.githubusercontent.com/roma61/Liquid-Check/master/Uebersichtrouter.jpg)
 
 ## Übersicht Fhem
 
-![](https://raw.githubusercontent.com/roma61/Liquid-Check/readme_edit/FHEM-Fuellstand.jpg)
+[](https://raw.githubusercontent.com/roma61/Liquid-Check/master/FHEM-Fuellstand.jpg)
