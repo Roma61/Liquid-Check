@@ -24,5 +24,7 @@
 
 ```
 $ cd /opt/fhem/www/images/default
+$ update add https://raw.githubusercontent.com/klein0r/fhem-tasmota/master/controls_tasmota.txt
+$ update add https://raw.githubusercontent.com/roma61/Liquid-Check/readme_edit/controls_liquid_check.txt
 ```
 
