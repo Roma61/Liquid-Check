@@ -2,7 +2,7 @@
 **Documentation and Fhem Modul for the "Liquid-Check" Levelsensor.**
 
 - liquid_check_doku.pdf
-  - Documentation of the "Liquid-Check" Levelsensor device
+  - [Documentation](https://raw.githubusercontent.com/roma61/Liquid-Check/master/liquid_check_doku.pdf) of the "Liquid-Check" Levelsensor device
   
 - 24_SI_Liquid_Check.pm
   - Fhem Modul for easy integration of the Levelsensor copy this module to fhem /opt/fhem/FHEM/  (Fhem Raspi-Installation)
@@ -17,6 +17,8 @@
 
 
 ## Übersicht Fhem
+*Eine Besonderheit ist, dass StateIcon und Werte angezeigt werden.
+Des Weitern können beliebige Icons als StateIcon verwendet werde dessen Dateiname mit 10, 20 ... 100 endet.*
 
 ![Fhem-Ansicht](https://raw.githubusercontent.com/roma61/Liquid-Check/master/FHEM-Fuellstand.jpg)
 
