@@ -1,14 +1,14 @@
-# Liquid-Check FHEM Module
-**Documentation and Fhem Modul for the "Liquid-Check" Levelsensor.**
+# FHEM Module Liquid-Check 
+**Fhem Modul and Documentation for the "Liquid-Check" Levelsensor.**
 
 - liquid_check_doku.pdf
   - [Documentation](https://raw.githubusercontent.com/roma61/Liquid-Check/master/liquid_check_doku.pdf) of the "Liquid-Check" Levelsensor device
   
 - 24_SI_Liquid_Check.pm
-  - Fhem Modul for easy integration of the Levelsensor copy this module to fhem /opt/fhem/FHEM/  (Fhem Raspi-Installation)
+  - Fhem Modul for easy integration of the Levelsensor, copy this module to fhem: /opt/fhem/FHEM/  (Fhem Raspi-Installation)
   
-- icons.rar
-  - this icons are the default icons for the fhem-modul 24_SI_Liquid_Check.pm unpack icons.rar to /opt/fhem/www/images/default/                        
+- icons.tar.gz
+  - this icons are the default icons for the fhem-modul "24_SI_Liquid_Check.pm", unpack icons to /opt/fhem/www/images/default/                        
 
 
 ## Übersicht Geräte
