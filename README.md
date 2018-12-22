@@ -21,10 +21,12 @@
 ![Fhem-Ansicht](https://raw.githubusercontent.com/roma61/Liquid-Check/master/FHEM-Fuellstand.jpg)
 
 ## Install
-
+*Dieses Beispiel geht von einer FEHM-Installation auf einem Raspberry Pi aus*
 ```
-$ cd /opt/fhem/www/images/default
-$ update add https://raw.githubusercontent.com/klein0r/fhem-tasmota/master/controls_tasmota.txt
-$ update add https://raw.githubusercontent.com/roma61/Liquid-Check/readme_edit/controls_liquid_check.txt
+$ wget -P /opt/fhem/FHEM -N https://raw.github.com/roma61/Liquid-Check/master/24_SI_Liquid_Check.pm
+$ wget -P /opt/fhem -N https://raw.github.com/roma61/Liquid-Check/master/icons.tar.gz
+$ tar xfvz /opt/fhem/icons.tar.gz -C /opt/fhem/www/images/default
+$ rm /opt/fhem/icons.tar.gz
+
 ```
 
