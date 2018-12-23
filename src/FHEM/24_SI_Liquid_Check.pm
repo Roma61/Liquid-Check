@@ -31,14 +31,14 @@
 #  Periodic sensor query in non-blocking receive mode
 #  Polling interval between 10 - 86400 Sec. (default 3600 sec.)
 # 
-#   Vers. 0.9   timeout in attributen ergänzt, Kommentare bearbeitet, debug dummy entfernt
-#   Vers. 0.8   $round.level auf 0.5 Digit runden 
-#   Vers. 0.7   Readings mit gerundeten Werten anlegen
-#   Vers. 0.6	"Intervall" als Attribut damit bei einem Neustart gesichert
-#   Vers. 0.5	Fehler für Roundlevel beseitigt / $level auf 2 Nachkommastellen gerundet
-#   Vers. 0.4	Menge > 99 Liter auf ganze Liter gerundet / % Wert auf 100 begrenzen /Doku kleine Ergänzung
-#   Vers. 0.3	SI-Gerät suchen : sub get_sensor_addr($) integriert
-#   Vers. 0.2	Mit externem Tool SI-Gerät suchen
+#	Vers. 0.9	timeout in attributen ergänzt, Kommentare bearbeitet, debug dummy entfernt
+#	Vers. 0.8	$round.level auf 0.5 Digit runden 
+#	Vers. 0.7	Readings mit gerundeten Werten anlegen
+#	Vers. 0.6	"Intervall" als Attribut damit bei einem Neustart gesichert
+#	Vers. 0.5	Fehler für Roundlevel beseitigt / $level auf 2 Nachkommastellen gerundet
+#	Vers. 0.4	Menge > 99 Liter auf ganze Liter gerundet / % Wert auf 100 begrenzen /Doku kleine Ergänzung
+#	Vers. 0.3	SI-Gerät suchen : sub get_sensor_addr($) integriert
+#	Vers. 0.2	Mit externem Tool SI-Gerät suchen
 #
 ########################################################################################
 
