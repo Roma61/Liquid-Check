@@ -7,7 +7,7 @@
 - src/FHEM/24_SI_Liquid_Check.pm
   - Fhem Modul for easy integration of the Levelsensor, copy this module to fhem: ./FHEM/
   
-- src/www/images/default/sidev/fuellstand/*.*
+- src/www/images/default/sidev/fuellstand/\*.\*
   - this icons are the default icons for the fhem-modul "24_SI_Liquid_Check.pm", unpack icons to ./www/images/default/     
   
 *For easy download use FHEM-Update feature /see "Installation"*  
