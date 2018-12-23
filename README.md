@@ -4,10 +4,10 @@
 - liquid_check_doku.pdf
   - [Documentation](https://raw.githubusercontent.com/roma61/Liquid-Check/master/liquid_check_doku.pdf) of the "Liquid-Check" Levelsensor device
   
-- 24_SI_Liquid_Check.pm
+- src/FHEM/24_SI_Liquid_Check.pm
   - Fhem Modul for easy integration of the Levelsensor, copy this module to fhem: ./FHEM/
   
-- icons.tar.gz
+- src/www/images/default/sidev/fuellstand/*.*
   - this icons are the default icons for the fhem-modul "24_SI_Liquid_Check.pm", unpack icons to ./www/images/default/     
   
 *For easy download use FHEM-Update feature /see "Installation"*  
