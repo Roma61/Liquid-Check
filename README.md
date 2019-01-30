@@ -15,7 +15,7 @@
 
 ## Übersicht Geräte
 
-# Liquid-Check Aufbau
+### Liquid-Check Aufbau
 <img src="Uebersichtrouter.jpg" />
 
 ## Übersicht Fhem
