@@ -15,7 +15,7 @@
    version="1.1"
    id="svg8"
    inkscape:version="0.92.3 (2405546, 2018-03-11)"
-   sodipodi:docname="wasser_pegel.svg">
+   sodipodi:docname="oel_pegel_c.svg">
   <defs
      id="defs2">
     <marker
@@ -161,19 +161,19 @@
      borderopacity="1.0"
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
-     inkscape:zoom="1.179799"
-     inkscape:cx="326.29803"
-     inkscape:cy="377.78738"
+     inkscape:zoom="0.91718054"
+     inkscape:cx="318.6165"
+     inkscape:cy="371.83074"
      inkscape:document-units="mm"
      inkscape:current-layer="layer1"
      showgrid="false"
      showguides="false"
      units="px"
-     inkscape:window-width="1680"
-     inkscape:window-height="988"
-     inkscape:window-x="-8"
-     inkscape:window-y="-8"
-     inkscape:window-maximized="1"
+     inkscape:window-width="1452"
+     inkscape:window-height="801"
+     inkscape:window-x="104"
+     inkscape:window-y="162"
+     inkscape:window-maximized="0"
      inkscape:snap-bbox="false"
      inkscape:snap-text-baseline="true"
      inkscape:snap-page="true"
@@ -274,18 +274,22 @@
        transform="rotate(90)" />
     <text
        xml:space="preserve"
-       style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:53.11178207px;line-height:1.25;font-family:sans-serif;-inkscape-font-specification:'sans-serif, Bold';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;text-align:start;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:start;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1.32777905"
-       x="-8.4073305"
-       y="131.00758"
+       style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:54.05160522px;line-height:1.25;font-family:sans-serif;-inkscape-font-specification:'sans-serif, Bold';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;text-align:start;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:start;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1.35129952"
+       x="-3.9153881"
+       y="146.13162"
        id="text926"
-       transform="scale(0.85177877,1.1740138)"
-       inkscape:transform-center-x="-18.464635"
-       inkscape:transform-center-y="1.9731895"><tspan
+       transform="scale(0.9354192,1.0690394)"><tspan
          sodipodi:role="line"
-         id="tspan916"
-         x="-8.4073305"
-         y="131.00758"
-         style="stroke-width:1.32777905">Wasser</tspan></text>
+         id="tspan924"
+         x="-3.9153881"
+         y="146.13162"
+         style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:54.05160522px;font-family:sans-serif;-inkscape-font-specification:'sans-serif, Bold';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;text-align:start;writing-mode:lr-tb;text-anchor:start;stroke-width:1.35129952">Heizöl</tspan></text>
+    <path
+       style="opacity:0.6;fill:#c57643;fill-opacity:0.39871383;fill-rule:evenodd;stroke:none;stroke-width:15.93517494;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:0;paint-order:markers fill stroke"
+       d="M 86.383052,384.12797 V 264.1952 H 103.096 119.80895 l 8.63648,10.60355 c 16.73173,20.54261 21.45261,24.30879 34.63024,27.62695 9.23477,2.32534 13.60961,1.05137 25.47102,-7.41725 12.77601,-9.12161 18.69425,-15.29191 22.85091,-23.82411 1.7025,-3.49465 4.92052,-8.27834 7.15116,-10.63043 3.36519,-3.54842 4.57633,-4.17241 7.11354,-3.66497 5.96773,1.19355 29.08708,13.13727 33.7506,17.43595 l 4.68871,4.3219 v 18.81533 18.81534 l -20.7639,0.79904 c -11.42014,0.43948 -20.61953,1.18677 -20.44308,1.66066 0.87847,2.35937 62.48136,104.64153 63.0239,104.64153 0.73215,0 59.95542,-106.04736 59.95542,-107.35836 0,-0.48193 -10.058,-0.64403 -22.35111,-0.36025 l -22.35111,0.51598 v -16.7229 -16.7229 h 4.02896 c 2.86356,0 4.89339,-0.82817 7.01741,-2.86311 1.64364,-1.57471 4.12366,-3.42428 5.51115,-4.11015 1.38748,-0.68588 5.95713,-5.80772 10.15478,-11.38187 8.6038,-11.42519 12.58509,-14.46103 19.08222,-14.5507 5.15557,-0.0712 7.07541,1.40544 15.41439,11.8555 4.81704,6.03651 6.27916,7.09486 13.79354,9.98437 14.63761,5.62861 20.71311,7.06486 24.04575,5.68444 4.01053,-1.66122 18.51291,-17.70192 19.99961,-22.12105 1.53377,-4.55904 2.75525,-6.0802 6.39277,-7.96124 2.67542,-1.3835 3.44531,-1.26088 8.52874,1.35844 3.17031,1.63355 10.65892,7.81338 17.30903,14.28395 16.52714,16.08094 19.20215,17.64083 30.25165,17.64083 5.41873,0 9.34201,-0.506 10.14437,-1.30836 1.01761,-1.01761 1.30836,23.81695 1.30836,111.75553 V 504.06073 H 290.26875 86.383052 Z"
+       id="path916"
+       inkscape:connector-curvature="0"
+       transform="matrix(0.26458333,0,0,0.26458333,0,142.21879)" />
   </g>
   <g
      inkscape:groupmode="layer"

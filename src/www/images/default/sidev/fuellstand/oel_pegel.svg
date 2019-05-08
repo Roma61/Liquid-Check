@@ -15,7 +15,7 @@
    version="1.1"
    id="svg8"
    inkscape:version="0.92.3 (2405546, 2018-03-11)"
-   sodipodi:docname="wasser_pegel.svg">
+   sodipodi:docname="oel_pegel.svg">
   <defs
      id="defs2">
     <marker
@@ -161,19 +161,19 @@
      borderopacity="1.0"
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
-     inkscape:zoom="1.179799"
-     inkscape:cx="326.29803"
-     inkscape:cy="377.78738"
+     inkscape:zoom="1.0128467"
+     inkscape:cx="290.48489"
+     inkscape:cy="480.06828"
      inkscape:document-units="mm"
      inkscape:current-layer="layer1"
      showgrid="false"
      showguides="false"
      units="px"
-     inkscape:window-width="1680"
-     inkscape:window-height="988"
-     inkscape:window-x="-8"
-     inkscape:window-y="-8"
-     inkscape:window-maximized="1"
+     inkscape:window-width="1452"
+     inkscape:window-height="801"
+     inkscape:window-x="104"
+     inkscape:window-y="162"
+     inkscape:window-maximized="0"
      inkscape:snap-bbox="false"
      inkscape:snap-text-baseline="true"
      inkscape:snap-page="true"
@@ -189,7 +189,7 @@
         <dc:format>image/svg+xml</dc:format>
         <dc:type
            rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
-        <dc:title></dc:title>
+        <dc:title />
       </cc:Work>
     </rdf:RDF>
   </metadata>
@@ -274,18 +274,16 @@
        transform="rotate(90)" />
     <text
        xml:space="preserve"
-       style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:53.11178207px;line-height:1.25;font-family:sans-serif;-inkscape-font-specification:'sans-serif, Bold';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;text-align:start;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:start;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1.32777905"
-       x="-8.4073305"
-       y="131.00758"
+       style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:54.05160522px;line-height:1.25;font-family:sans-serif;-inkscape-font-specification:'sans-serif, Bold';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;text-align:start;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:start;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1.35129952"
+       x="-3.9153881"
+       y="146.13162"
        id="text926"
-       transform="scale(0.85177877,1.1740138)"
-       inkscape:transform-center-x="-18.464635"
-       inkscape:transform-center-y="1.9731895"><tspan
+       transform="scale(0.9354192,1.0690394)"><tspan
          sodipodi:role="line"
-         id="tspan916"
-         x="-8.4073305"
-         y="131.00758"
-         style="stroke-width:1.32777905">Wasser</tspan></text>
+         id="tspan924"
+         x="-3.9153881"
+         y="146.13162"
+         style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:54.05160522px;font-family:sans-serif;-inkscape-font-specification:'sans-serif, Bold';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;text-align:start;writing-mode:lr-tb;text-anchor:start;stroke-width:1.35129952">Heizöl</tspan></text>
   </g>
   <g
      inkscape:groupmode="layer"

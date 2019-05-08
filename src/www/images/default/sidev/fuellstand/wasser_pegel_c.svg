@@ -15,7 +15,7 @@
    version="1.1"
    id="svg8"
    inkscape:version="0.92.3 (2405546, 2018-03-11)"
-   sodipodi:docname="wasser_pegel.svg">
+   sodipodi:docname="wasser_pegel_c.svg">
   <defs
      id="defs2">
     <marker
@@ -161,19 +161,19 @@
      borderopacity="1.0"
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
-     inkscape:zoom="1.179799"
-     inkscape:cx="326.29803"
-     inkscape:cy="377.78738"
+     inkscape:zoom="1.0128467"
+     inkscape:cx="354.73721"
+     inkscape:cy="322.09768"
      inkscape:document-units="mm"
      inkscape:current-layer="layer1"
      showgrid="false"
      showguides="false"
      units="px"
-     inkscape:window-width="1680"
-     inkscape:window-height="988"
-     inkscape:window-x="-8"
-     inkscape:window-y="-8"
-     inkscape:window-maximized="1"
+     inkscape:window-width="1452"
+     inkscape:window-height="801"
+     inkscape:window-x="98"
+     inkscape:window-y="150"
+     inkscape:window-maximized="0"
      inkscape:snap-bbox="false"
      inkscape:snap-text-baseline="true"
      inkscape:snap-page="true"
@@ -286,6 +286,12 @@
          x="-8.4073305"
          y="131.00758"
          style="stroke-width:1.32777905">Wasser</tspan></text>
+    <path
+       style="opacity:0.6;fill:#4a81ef;fill-opacity:0.55305469;fill-rule:evenodd;stroke:none;stroke-width:14.43005466;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:0;paint-order:markers fill stroke"
+       d="M 86.187186,384.78732 V 264.97731 l 9.626334,-0.63746 c 5.29448,-0.35061 12.753,-0.63976 16.57448,-0.64257 l 6.94815,-0.005 8.41041,10.11999 c 4.62572,5.566 10.09664,12.21994 12.15761,14.78654 6.60209,8.22186 19.97115,14.59735 30.88318,14.72769 5.15643,0.0616 5.98516,-0.29964 15.37719,-6.70262 14.56673,-9.93082 19.39736,-14.70129 24.47914,-24.17431 5.52266,-10.29483 10.44114,-15.6685 14.34127,-15.6685 1.56962,0 9.2636,3.1673 17.09774,7.03845 10.37799,5.12817 15.40615,8.23434 18.5263,11.44474 l 4.28244,4.40631 v 18.66839 18.6684 h -21.2273 c -11.67502,0 -21.2273,0.26153 -21.2273,0.58118 0,1.70573 63.51698,106.09873 64.12911,105.39906 1.12726,-1.28841 59.28532,-106.05901 59.28619,-106.8029 4.4e-4,-0.36207 -10.21829,-0.51088 -22.70827,-0.33068 l -22.70905,0.32764 V 299.94013 283.6986 l 4.11062,-0.55134 c 2.26084,-0.30325 5.25982,-1.47662 6.66438,-2.6075 1.40458,-1.13088 4.17683,-3.14113 6.16057,-4.46724 1.98373,-1.3261 5.76022,-5.38864 8.39219,-9.02786 10.21944,-14.13044 13.95815,-17.17481 21.09199,-17.17481 5.66172,0 6.84277,0.84855 14.32869,10.29471 3.63358,4.58506 7.33511,8.62661 8.2256,8.98122 16.15992,6.4351 27.24843,9.43987 30.56692,8.28303 4.20489,-1.46583 18.58432,-17.62926 20.66224,-23.22573 1.24314,-3.34815 2.73541,-5.30318 5.10364,-6.6863 l 3.34681,-1.95465 6.20364,3.21643 c 4.35059,2.25567 9.9497,6.87388 18.74483,15.46092 15.16735,14.80851 17.74601,16.23718 29.30713,16.23718 7.68316,0 8.6688,-0.2151 10.0551,-2.19432 1.39485,-1.99143 1.53696,8.36945 1.53696,112.06039 V 504.59734 H 290.56165 86.187186 Z"
+       id="path918"
+       inkscape:connector-curvature="0"
+       transform="matrix(0.26458333,0,0,0.26458333,0,142.21879)" />
   </g>
   <g
      inkscape:groupmode="layer"
