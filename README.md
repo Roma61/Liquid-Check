@@ -28,7 +28,7 @@ Des Weitern können beliebige Icons als StateIcon verwendet werde dessen Dateina
 *Run the following commands in FHEM command-line to add this repository to your FHEM setup:*
 ```
 update add https://raw.githubusercontent.com/roma61/Liquid-Check/master/src/controls_liquid_check.txt
-update force liquid_check
+update all liquid_check
 shutdown restart
 
 ```
