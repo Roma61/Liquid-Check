@@ -30,7 +30,8 @@
 #  with a variable timeout setting (default 1sec).	
 #  Periodic sensor query in non-blocking receive mode
 #  Polling interval between 10 - 86400 Sec. (default 3600 sec.)
-# 
+#
+#   Vers. 1.0   Fehlerhafte readings entfernt device.model, device.security; help mit icon-info ergänzt
 #	Vers. 0.9	timeout in attributen ergänzt, Kommentare bearbeitet, debug dummy entfernt
 #	Vers. 0.8	$round.level auf 0.5 Digit runden 
 #	Vers. 0.7	Readings mit gerundeten Werten anlegen
@@ -194,7 +195,9 @@ sub SI_Liquid_Check_ParseHttpResponse($)
 		foreach my $key (sort keys %{$json->{'payload'}->{'device'}}) {
 			#print $key." - "; 
 			#print $json->{'payload'}->{$key}."\n";
-   	    	readingsBulkUpdate($hash, 'device.'.$key, $json->{'payload'}->{'device'}->{$key});
+			if (($key ne "model")&&($key ne "security")){
+   	    		readingsBulkUpdate($hash, 'device.'.$key, $json->{'payload'}->{'device'}->{$key});
+			}
 		}
 		foreach my $key (sort keys %{$json->{'payload'}->{'system'}}) {
 			#print $key." - "; 
@@ -556,6 +559,9 @@ sub SI_Liquid_Check_devStateIcon($)
 		<p>
 		<li><b>devStateIcon={SI_Liquid_Check_devStateIcon($name)}</b>:
 		Predefined function for representing values and state icon together.
+		<p>
+		<li><b>icon</b>: 2 further dev icons will be found at<br>
+		1. "sidev/fuellstand/wasser_pegel"; 2. "sidev/fuellstand/oel_pegel"		
 		
 	</ul>
   <p>
@@ -614,6 +620,9 @@ sub SI_Liquid_Check_devStateIcon($)
 		<p>
 		<li><b>devStateIcon={SI_Liquid_Check_devStateIcon($name)}</b>:<br>
 		Vordefinierte Funktion, damit Messwerte und State Icon zusammen dargestellt werden.
+		<p>
+		<li><b>icon</b>: Es werden 2 weitere Geräte Icon zur Verfügung gestellt<br>
+		1. "sidev/fuellstand/wasser_pegel"; 2. "sidev/fuellstand/oel_pegel"
 	</ul>
   <p>
   <b>Requirements</b>
