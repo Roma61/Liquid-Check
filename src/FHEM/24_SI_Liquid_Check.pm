@@ -129,8 +129,8 @@ sub SI_Liquid_Check_Define($$)
 	 	$attr{$name}{"devStateIcPaNa"} = 'sidev/fuellstand/fill_level_*';			#Path+Name des StateIcon mit * anstatt des Level
 	 	$attr{$name}{"devStateStyle"} = 'style="font-size:18px; color:green"';
 	 	$attr{$name}{"maxInhaltLiter"} = 10;
-	 	$attr{$name}{"eventMap"} = 'messung_starten:Messen';
-	 	$attr{$name}{"webCmd"} = 'Messen';
+	 	$attr{$name}{"cmdIcon"} = 'messung_starten:refresh';
+	 	$attr{$name}{"webCmd"} = 'messung_starten';
 	 	$attr{$name}{"interval"} = $hash->{INTERVAL};
 	 	$attr{$name}{"icon"} = 'sidev/fuellstand/wasser_pegel_otc';					#Path+Name GeraeteIcon
 		$attr{$name}{"disable"} = 0;
@@ -544,8 +544,8 @@ sub SI_Liquid_Check_devStateIcon($)
 	else {$myIcon = FW_makeImage($pathName1.$roundlevel.$pathName2.'@red')};	
 	
 	if ($attr{$name}{'showTrend'} eq 1) { 
-		if ($lastlevel < $level) {$myIcon2 = FW_makeImage('control_arrow_up_right')}
-		elsif ($lastlevel > $level) {$myIcon2 = FW_makeImage('control_arrow_down_right')}
+		if ($lastlevel lt $level) {$myIcon2 = FW_makeImage('control_arrow_up_right')}
+		elsif ($lastlevel gt $level) {$myIcon2 = FW_makeImage('control_arrow_down_right')}
 		else {$myIcon2 = FW_makeImage('control_arrow_right')};
 	}
 
@@ -666,8 +666,8 @@ sub SI_Liquid_Check_devStateIcon($)
 		<li><b>devStateIcon</b>: devStateIcon={SI_Liquid_Check_devStateIcon($name)}</li>
 		Predefined function for representing values and state icon together.
 		<p>
-		<li><b>icon</b>: 2 further dev icons will be found at</li><br>
-		1. "sidev/fuellstand/wasser_pegel"; 2. "sidev/fuellstand/oel_pegel"	
+		<li><b>icon</b>: 2 dev icons will be found at</li><br>
+		1. "sidev/fuellstand/wasser_pegel_otc"; 2. "sidev/fuellstand/oel_pegel_otc"	
 		<p>
 		<li><b>maxInhaltLiter</b>: Maximum capacity of the tank in liters.</li>
 		 Is needed so that a percentage level calculation can be made.
@@ -786,8 +786,8 @@ sub SI_Liquid_Check_devStateIcon($)
 		<li><b>devStateIcon</b>: devStateIcon={SI_Liquid_Check_devStateIcon($name)} </li>
 		Vordefinierte Funktion, damit Messwerte und State Icon zusammen dargestellt werden.
 		<p>
-		<li><b>icon</b>: Es werden 2 weitere Geräte Icon zur Verfügung gestellt </i><br>
-		1. "sidev/fuellstand/wasser_pegel"; 2. "sidev/fuellstand/oel_pegel"
+		<li><b>icon</b>: Es werden 2 Geräte Icon zur Verfügung gestellt </i><br>
+		1. "sidev/fuellstand/wasser_pegel_otc"; 2. "sidev/fuellstand/oel_pegel_otc"
 		<p>
 		<li><b>maxInhaltLiter</b>: Maximale Füllmenge des Tanks in Liter. </li>
 		Wird benötigt damit eine Prozentuale Füllstandsberechnung gemacht werden kann.	
