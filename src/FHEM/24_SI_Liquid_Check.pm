@@ -589,7 +589,7 @@ sub SI_Liquid_Check_devStateIcon($)
   <br>
   <b>Define</b>
   	<ul>
-    <code>define &lt;name&gt; SI_Liquid_Check (&lt;ip/hostname&gt);</code><br>
+    <code>define &lt;name&gt; SI_Liquid_Check [&lt;ip/hostname&gt];</code><br>
     <br>
 	Defines a SI_Liquid_Check wifi-controlled level sensor.<br>
 	This module automatically detects the modul defined and adapts the readings accordingly.<br>
@@ -706,7 +706,7 @@ sub SI_Liquid_Check_devStateIcon($)
   	<br>
   <b>Define</b> 
   	<ul>
-    <code>define &lt;name&gt; SI_Liquid_Check (&lt;ip/hostname&gt);</code><br>
+    <code>define &lt;name&gt; SI_Liquid_Check [&lt;ip/hostname&gt];</code><br>
    	<br>
     Definiert einen SI_Liquid_Check level sensor. <br>
 	Die Angabe von "ip/hostname" ist optional, das Modul sendet einen UDP-Broadcast, dabei erkennt es automatisch eine SI_Liquid_Check Gerät im Netzwerk und setzt die "ip/host-Adresse" entsprechend. 
