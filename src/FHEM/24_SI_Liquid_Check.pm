@@ -31,6 +31,17 @@
 #  Periodic sensor query in non-blocking receive mode
 #  Polling interval between 10 - 86400 Sec. (default 3600 sec.)
 #
+#
+#   Vers. 1.1	NEXTUPDATE in Readings verschoben u. angepasst
+#				Neues Reading "nextupdtime", jede Readingänderung erzeugt einen Event
+#				Neues Reading "last.measure.content", "last.measure.level"
+#				Readings "round.measure.content" und "round.measure.level" entfernt
+#				Standard State Icon geändert (ohne Überschrift)
+#               SET-Befehl "messung_starten" für Messung aktivieren ergänzt
+#				Neues Attribut "showTrend" für Darstellung einer Trendanzeige mit Pfeil
+#				Verbesserte Aktualisierung bei Neustart
+#				Hilfe aktualisiert
+#				
 #   Vers. 1.0   Fehlerhafte readings entfernt device.model, device.security; help mit icon-info ergänzt
 #	Vers. 0.9	timeout in attributen ergänzt, Kommentare bearbeitet, debug dummy entfernt
 #	Vers. 0.8	$round.level auf 0.5 Digit runden 
@@ -71,6 +82,7 @@ sub SI_Liquid_Check_Initialize($)
 						"interval ".
 						"timeout ".
 						"maxInhaltLiter ".
+						"showTrend:1,0 ".
                         "$readingFnAttributes";
 }
 
@@ -99,14 +111,12 @@ sub SI_Liquid_Check_Define($$)
    }     
   
   $hash->{INTERVAL}=3600;		# Intervall in Sek. (10-86400) für des zyklische Lesen der Sensordaten
-  #$hash->{HOST}=$device_ip;
-  #$hash->{SENSOR}=$device_name;
   $hash->{status}='Try to connect';
+  $hash->{SENSOR}='device_name: seek';
 
-  #Log3 $hash, 3, "SI_Liquid_Check: $name defined IP=$device_ip.";
   
   #initial request after 10 secs, later the timer is set to <Interval> for further update
-  InternalTimer(gettimeofday()+5, "SI_Liquid_Check_Read", $hash, 0);
+  InternalTimer(gettimeofday()+10, "SI_Liquid_Check_Read", $hash, 0);
 
 
 # prüfen, ob eine neue Definition angelegt wird 
@@ -118,18 +128,23 @@ sub SI_Liquid_Check_Define($$)
 	 	$attr{$name}{"devStateIcon"} = "{SI_Liquid_Check_devStateIcon(\$name)}";	#Funktion zur Übergabe StateIcon
 	 	$attr{$name}{"devStateIcPaNa"} = 'sidev/fuellstand/fill_level_*';			#Path+Name des StateIcon mit * anstatt des Level
 	 	$attr{$name}{"devStateStyle"} = 'style="font-size:18px; color:green"';
-	 	$attr{$name}{"maxInhaltLiter"} = 500;
+	 	$attr{$name}{"maxInhaltLiter"} = 10;
+	 	$attr{$name}{"cmdIcon"} = 'messung_starten:refresh';
+	 	$attr{$name}{"webCmd"} = 'messung_starten';
 	 	$attr{$name}{"interval"} = $hash->{INTERVAL};
-	 	$attr{$name}{"icon"} = 'sidev/fuellstand/wasser_pegel';						#Path+Name GeraeteIcon
+	 	$attr{$name}{"icon"} = 'sidev/fuellstand/wasser_pegel_otc';					#Path+Name GeraeteIcon
 		$attr{$name}{"disable"} = 0;
 		$attr{$name}{"timeout"} = 1;
-		if($b_get_sensor eq 1){get_sensor_addr($hash)};
+		$attr{$name}{"showTrend"} = 1;  											# Zeigt einen Pfeil für Tendez (steigend, fallend)
+		$attr{$name}{"event-on-change-reading"} = '.*';
  	 }
    } 
-  elsif($init_done)
-   {
+  elsif($init_done) {
 	$hash->{INTERVAL}=$attr{$name}{"interval"};
    }
+
+  if($b_get_sensor == 1) {InternalTimer(gettimeofday()+5, "get_sensor_addr", $hash, 0)};
+ 
   
   return undef;
 }
@@ -182,9 +197,13 @@ sub SI_Liquid_Check_ParseHttpResponse($)
 		eval {
 			$json = decode_json($data);
 			} or do {
-			Log3 $hash, 2, "SI_Liquid_Check: $name json-decoding failed. Problem decoding getting statistical data";
+			Log3 $hash, 3, "SI_Liquid_Check: $name json-decoding failed. Problem decoding getting statistical data";
 			return;
 		};
+		# Die Werte "level" und "content" merken
+		my $tmp_content = ReadingsVal($name, "measure.content", 0);
+		my $tmp_level =  ReadingsVal($name, "measure.level", 0);
+
 		readingsBeginUpdate($hash);	
 		foreach my $key (sort keys %{$json->{'payload'}->{'measure'}}) {
 			#print $key." - "; 
@@ -217,7 +236,17 @@ sub SI_Liquid_Check_ParseHttpResponse($)
 		readingsBulkUpdate($hash, "state", $json->{'payload'}->{'measure'}->{'content'});
 		readingsEndUpdate($hash, 1);
 		$hash->{status}="Connect";
-		Log3 $hash, 4, "SI_Liquid_Check: $name read state $json->{'payload'}->{'measure'}->{'content'}";
+		
+		Log3 $hash, 4, "SI_Liquid_Check: $name parse received data";
+
+        # Bei neuem verändertem Messwert den alten Wert speichern
+		if (ReadingsVal($name, "measure.level", 0) != $tmp_level) {
+			readingsBeginUpdate($hash);	
+				readingsBulkUpdate($hash, "last.measure.content", $tmp_content);
+				readingsBulkUpdate($hash, "last.measure.level", $tmp_level);
+			readingsEndUpdate($hash, 1);
+		}
+		
 		set_Round_Measure($hash);
     }
     
@@ -242,6 +271,7 @@ sub set_Round_Measure($)
 	my $gesInhalt = $attr{$name}{'maxInhaltLiter'};
 	my $percent = 0;
 	my $round10percent = 0;
+	if (!defined($gesInhalt)) {$gesInhalt=99999};
 	if ($gesInhalt > 0) {
 		$percent = int($content/$gesInhalt*100+0.5); 	 # %Wert auf ganze Stelle gerundet
 		$round10percent = int($percent/10+0.5)*10;	 	 # Rundet den %Wert für die Levelanzeige auf glatte 10er Werte 0,10,20..100
@@ -258,8 +288,8 @@ sub set_Round_Measure($)
 	#$level = int($level*100+0.5)/100;  					# Pegelhöhe auf 2 Kommastellen Runden 
 
 	readingsBeginUpdate($hash);	
-		readingsBulkUpdate($hash, "round.content", $content);
-		readingsBulkUpdate($hash, "round.level", $level);
+	#	readingsBulkUpdate($hash, "round.content", $content);
+	#	readingsBulkUpdate($hash, "round.level", $level);
 		readingsBulkUpdate($hash, "round.percent", $percent);
 		readingsBulkUpdate($hash, "round10.percent", $round10percent);
 	readingsEndUpdate($hash, 1);
@@ -276,16 +306,23 @@ sub SI_Liquid_Check_Read($)
 	my $name = $hash->{NAME};
 #   	RemoveInternalTimer($hash);    
 	return "Device disabled in config" if ($attr{$name}{"disable"} eq "1");
-	InternalTimer(gettimeofday()+$hash->{INTERVAL}, "SI_Liquid_Check_Read", $hash, 1);
-	$hash->{NEXTUPDATE}=localtime(gettimeofday()+$hash->{INTERVAL});
-   	Log3 $hash, 3, "SI_Liquid_Check: $name Read called:$hash->{SENSOR}:-:$hash->{status}:";
-
+	InternalTimer(gettimeofday()+$hash->{INTERVAL}, "SI_Liquid_Check_Read", $hash, 0);
+	my ($sec,$min,$hour,$mday,$mon,$year,$wday,$yday,$isdst) = localtime(gettimeofday()+$hash->{INTERVAL});
+	my @adays = qw(So Mo Di Mi Do Fr Sa);
+	my @amonth = qw(Jan Feb Mär Apr Mai Jun Jul Aug Sep Okt Nov Dez);
+	$year += 1900;
+	$hash->{NEXTUPDATE}=sprintf("%s %2d. %s %04d - %02d:%02d",@adays[$wday],$mday,@amonth[$mon],$year,$hour,$min);
+	Log3 $hash, 4, "SI_Liquid_Check: $name Read called:$hash->{SENSOR}:-:$hash->{status}:";
+	readingsBeginUpdate($hash);	
+	readingsBulkUpdate($hash, "nextupdate", sprintf("%s %2d. %s %04d - %02d:%02d",@adays[$wday],$mday,@amonth[$mon],$year,$hour,$min));
+    readingsBulkUpdate($hash, "nextupdtime",sprintf("%02d:%02d:%02d",$hour,$min,$sec));		
+	readingsEndUpdate($hash, 1);
 	if (($hash->{SENSOR} =~ m/.*not found.*/) or ($hash->{status} eq 'ERROR')) {
 	   	Log3 $hash, 3, "SI_Liquid_Check: $name no Sensor found or Read-Error";
         readingsSingleUpdate($hash, "state", "ERROR",1);		
 		#Timer auf kurze Wiederholung (Intervall /3) einstellen
   		RemoveInternalTimer($hash);    
-		InternalTimer(gettimeofday()+int($hash->{INTERVAL}/3), "SI_Liquid_Check_Read", $hash, 1);
+		InternalTimer(gettimeofday()+int($hash->{INTERVAL}/3), "SI_Liquid_Check_Read", $hash, 0);
 		#$hash->{NEXTUPDATE}=localtime(gettimeofday()+int($hash->{INTERVAL}/3));
 		get_sensor_addr($hash);
 	}
@@ -307,13 +344,18 @@ sub SI_Liquid_Check_Get($$@)
 		SI_Liquid_Check_GetHttpResponse($hash);
 		#Log3 $hash, 3, "SI_Liquid_Check: $name Get end";
 		if ($attr{$name}{"disable"} ne "1") {   # Intervall nur starten wenn not disable
-			InternalTimer(gettimeofday()+$hash->{INTERVAL}, "SI_Liquid_Check_Read", $hash, 1);
+			InternalTimer(gettimeofday()+$hash->{INTERVAL}, "SI_Liquid_Check_Read", $hash, 0);
 		}	
 	} 	 
+	elsif ($cmd eq "suche_sensor") {
+			Log3 $hash, 3, "SI_Liquid_Check: $name Set <". $cmd ."> called";
+			get_sensor_addr($hash);
+	}
+	
 	else{
-		return "Unknown argument $cmd, choose one of sensor_lesen:noArg";
+		return "Unknown argument $cmd, choose one of sensor_lesen:noArg suche_sensor:noArg";
 	} 
-	Log3 $hash, 3, "SI_Liquid_Check: $name Get end";	
+	# Log3 $hash, 3, "SI_Liquid_Check: $name Get end";	
 }
 
 
@@ -327,12 +369,18 @@ sub SI_Liquid_Check_Set($$@)
    	#Log3 $hash, 3, "SI_Liquid_Check: $name Set <". $a[1] ."> called";
 
 	
-	if($cmd eq "suche_sensor") {
+	if ($cmd eq "messung_starten") {
 			Log3 $hash, 3, "SI_Liquid_Check: $name Set <". $cmd ."> called";
-			get_sensor_addr($hash);
+			my $remote_host = $hash->{HOST};
+			my $p1 = '{\"header\":{\"namespace\":\"Device.Control\",\"name\":\"StartMeasure\",\"messageId\":\"1\",\"payloadVersion\":\"1\"},\"payload\":null}';
+			my $param = 'echo "'.$p1.'" | curl --data-binary @- http://'.$remote_host.'/command';
+			qx "$param";
+			InternalTimer(gettimeofday()+15, "SI_Liquid_Check_Read", $hash, 0);
+		    readingsSingleUpdate($hash, "state", "Messen",1);		
+
 	}
 	else {
-			return "Unknown argument $cmd, choose one of suche_sensor:noArg";
+			return "Unknown argument $cmd, choose one of messung_starten:noArg"
 	}
 	return undef;
 }
@@ -364,7 +412,7 @@ sub SI_Liquid_Check_Attr {
 	my $hash = $defs{$name};
   
 	if ($aName eq "devStateIcPaNa") {
-		Log3 $hash, 3, "SI_Liquid_Check: $name devStateIconN set " ;
+		Log3 $hash, 3, "SI_Liquid_Check: $name devStateIcPaNa set " ;
 	}
 
 	if ($aName eq "maxInhaltLiter") {
@@ -389,6 +437,7 @@ sub SI_Liquid_Check_Attr {
 			}
 		}	
 	}
+
 	return undef;
 }
 
@@ -479,28 +528,35 @@ sub SI_Liquid_Check_devStateIcon($)
 	my ($pathName1) = ($pathName =~ m/(.*)\*/); # Erster Teil ohne % Angabe
 	my ($pathName2) = ($pathName =~ m/\*(.*)/); # Endung nach der % Angabe
 	my $anzStelle = 1; # Anzahl der Kommastelle bei sprintf für den Wert "content"
-  	my $content = ReadingsVal($name, "round.content", "0");
-	my $level = ReadingsVal($name, "round.level", "0");
-	my $percent = ReadingsVal($name, "round.percent", "0");
-	my $roundlevel = ReadingsVal($name, "round10.percent", "0");
+  	my $content = ReadingsVal($name, "measure.content", 0);
+	my $level = ReadingsVal($name, "measure.level", 0);
+	my $lastlevel = ReadingsVal($name, "last.measure.level", 0);
+	my $percent = ReadingsVal($name, "round.percent", 0);
+	my $roundlevel = ReadingsVal($name, "round10.percent", 0);
+	my $state = ReadingsVal($name, "state", 0);
 	#Log3 $hash, 3, "SI_Liquid_Check: $name $hash->{NAME},\n".$pathName1.$roundlevel.$pathName2."\n end\n";
 	my $myIcon='';
+	my $myIcon2='';
 	if ($content > 99) {$anzStelle = 0; };  # Bei sprintf, Menge > 99 Liter ohne Komma anzeigen
 	
-	if($roundlevel > 10){
-		$myIcon = FW_makeImage($pathName1.$roundlevel.$pathName2.'@green');
+	if ($state eq "Messen") {$myIcon = FW_makeImage('time_timer@orange')}	
+	elsif ($roundlevel > 10){$myIcon = FW_makeImage($pathName1.$roundlevel.$pathName2.'@green')}
+	else {$myIcon = FW_makeImage($pathName1.$roundlevel.$pathName2.'@red')};	
+	
+	if ($attr{$name}{'showTrend'} eq 1) { 
+		if ($lastlevel lt $level) {$myIcon2 = FW_makeImage('control_arrow_up_right')}
+		elsif ($lastlevel gt $level) {$myIcon2 = FW_makeImage('control_arrow_down_right')}
+		else {$myIcon2 = FW_makeImage('control_arrow_right')};
 	}
-	else {
-		$myIcon = FW_makeImage($pathName1.$roundlevel.$pathName2.'@red');
-	}	
-  	return '<div>
-				<div style="margin-left: 100px; float:left"> 
+
+	return '<div>
+				<div style="margin-left: 100px; float:left; margin-top: 10px"> 
 					'.$myIcon.'					
 				</div> 
 				<div style="margin-left: 80px; width: 200px; margin-top: 10px; text-align: center;">
 					'.sprintf("Höhe: %.2f&nbspm", $level).'<br>'
 					.sprintf("Menge: %.${anzStelle}f&nbspL", $content).'<br>'
-					.sprintf("&nbsp(%.0f&nbsp%%)", $percent).'
+					.sprintf("&nbsp(%.0f&nbsp%%) ", $percent).$myIcon2.'
 				</div>
 			</div>';
 			#  &nbsp ist ein geschütztes Leerzeichen (Kein Zeilenumbruch)
@@ -532,15 +588,65 @@ sub SI_Liquid_Check_devStateIcon($)
 	The device does not have to be mounted in the tank, it can be mounted directly in a supply room and only needs a thin hose connection to the tank.<br>
   <br>
   <b>Define</b>
-    <code>define &lt;name&gt; SI_Liquid_Check (&lt;ip/hostname&gt);</code><br>
-    	<br>
+  	<ul>
+    <code>define &lt;name&gt; SI_Liquid_Check [&lt;ip/hostname&gt];</code><br>
+    <br>
 	Defines a SI_Liquid_Check wifi-controlled level sensor.<br>
 	This module automatically detects the modul defined and adapts the readings accordingly.<br>
-	<br><br>
+	</ul>
+	<br>
 	The Parameter "ip/hostname" is optional because the module find the running Liqui_Check over an<br>
 	udp broadcast call. 
 	<p>
-  <b>Attributs</b>
+  <b>Set</b>
+	<ul>
+		<li><b>messung_starten</b>:  </li>
+			Causes the liquid check to take a measurement. Then the values are read and the interval restarts.
+	</ul>		
+  <p>
+  <b>Get</b>
+	<ul>
+		<li><b>sensor_lesen</b>:  </li>
+			Reads the last readings from the Liquid-Check, no active measurement is performed on the device.
+		<p>	
+		<li><b>suche_sensor</b>:  </li>
+			Search the Liquid-Check on the network and save the determined IP. <br>	
+	</ul>		
+  <p>	<br>
+  <b>Readings</b>
+	<ul>
+		Wesentliche Readings die meisten sind selbsterklärend
+		<p>
+		<li><b>...</b>  </li>
+		<p>
+		<li><b>last.measure.content</b>:  </li>
+		Capacity in liters before the last change
+		<p>
+		<li><b>last.measure.level</b>:  </li>
+		Level in meters before the last change
+		<p>
+		<li><b>measure.content</b>:  </li>
+		Capacity in liters, last updated
+		<p>
+		<li><b>measure.level</b>:  </li>
+		Level in meters, last updated
+		<p>
+		<li><b>nextupdate</b>:  </li>
+		Date and time for the next reading of the sensor (determined by the interval)
+		<p>
+		<li><b>nextupdtime</b>:  </li>
+		Time for the next reading of the sensor (determined by the interval)
+		<p>
+		<li><b>round.percent</b>:  </li>
+		Percentage level indicator. Depending on the attribute "maxInhaltLiter"
+		<p>
+		<li><b>round10.percent</b>:  </li>
+		Percentage in increments of 10 rounded for use in icon with different fill levels
+		<p>
+		<li><b>...</b>  </li>
+	</ul>	
+  <p>	<br>
+   <b>Attributs</b>
 	<ul>
 		<li><b>interval</b>: The interval in seconds, after which FHEM will update the current measurements. Default: 3600 Sec.(1 hour)</li>
 			An update of the measurements is also done on each "get sensor_lesen" as well.
@@ -551,17 +657,23 @@ sub SI_Liquid_Check_devStateIcon($)
 		<p>
 		<li><b>disable</b>: The execution of the module is suspended. Default: no.</li>
 			<i>Warning: if your Liquid-Check is not on or not connected to the wifi network, consider disabling this module
-			by the attribute "disable". Otherwise the cyclic update of the Sensor seek funktion will lead to blockings in FHEM.</i>
+			by the attribute "disable". Otherwise the cyclic update of the Sensor seek funktion will lead to blockings in FHEM.
 		<p>
-		<li><b>devStateIcPaNa=sidev/fuellstand/fill_level_*</b>:<br>
+		<li><b>devStateIcPaNa</b>: devStateIcPaNa=sidev/fuellstand/fill_level_* </li>
 		The path and name of an "Extend devStateIcon" instead of the percentage (0, 10, 20, .. 100) is given a "*". The path
 		is specified starting from the standard icon path "/ opt / fhem / www / images / default /" (Fhem Raspi installation).
 		<p>
-		<li><b>devStateIcon={SI_Liquid_Check_devStateIcon($name)}</b>:
+		<li><b>devStateIcon</b>: devStateIcon={SI_Liquid_Check_devStateIcon($name)}</li>
 		Predefined function for representing values and state icon together.
 		<p>
-		<li><b>icon</b>: 2 further dev icons will be found at<br>
-		1. "sidev/fuellstand/wasser_pegel"; 2. "sidev/fuellstand/oel_pegel"		
+		<li><b>icon</b>: 2 dev icons will be found at</li><br>
+		1. "sidev/fuellstand/wasser_pegel_otc"; 2. "sidev/fuellstand/oel_pegel_otc"	
+		<p>
+		<li><b>maxInhaltLiter</b>: Maximum capacity of the tank in liters.</li>
+		 Is needed so that a percentage level calculation can be made.
+		<p>
+		<li><b>showTrend</b>: Show or hide the trend arrow </li>
+		Indicates with an arrow whether the current measured value increases or decreases in relation to the preceding change.	
 		
 	</ul>
   <p>
@@ -593,12 +705,65 @@ sub SI_Liquid_Check_devStateIcon($)
   <a href="https://si-elektronik.de/IoT/Liquid-Check/Documents/liquid_check_doku.pdf" target="_blank">Komplette Dokumentation als Pdf</a> <br>
   	<br>
   <b>Define</b> 
-    <code>define &lt;name&gt; SI_Liquid_Check (&lt;ip/hostname&gt);</code><br>
-    	<br>
-    	Definiert einen SI_Liquid_Check level sensor. <br>
+  	<ul>
+    <code>define &lt;name&gt; SI_Liquid_Check [&lt;ip/hostname&gt];</code><br>
+   	<br>
+    Definiert einen SI_Liquid_Check level sensor. <br>
 	Die Angabe von "ip/hostname" ist optional, das Modul sendet einen UDP-Broadcast, dabei erkennt es automatisch eine SI_Liquid_Check Gerät im Netzwerk und setzt die "ip/host-Adresse" entsprechend. 
-	<br><br>
+	</ul>
+	<br>
   <p>
+  <b>Set</b>
+	<ul>
+		<li><b>messung_starten</b>:  </li>
+			Veranlasst den Liquid-Check eine Messung durchzuführen. Danach werden die Werte gelesen und der Intervall startet neu.
+	</ul>		
+	<br><p>
+  <b>Get</b>
+	<ul>
+		Diese beiden Funktionen werden automatisch 5sek. nach dem Erstellen des Gerätes ausgeführt.
+		<p>
+		<li><b>sensor_lesen</b>:  </li>
+			Liest die letzten Messwerte vom Liquid-Check, es wird keine aktive Messung am Gerät ausgeführt.
+		<p>			
+		<li><b>suche_sensor</b>:  </li>
+			Sucht den Liquid-Check im Netzwerk und speichert die ermittelte IP.<br>
+
+	</ul>		
+  <p>	<br>
+  <b>Readings</b>
+	<ul>
+		Wesentliche Readings die meisten sind selbsterklärend
+		<p>
+		<li><b>...</b>  </li>
+		<p>
+		<li><b>last.measure.content</b>:  </li>
+		Füllmenge in Liter vor der letzten Änderung
+		<p>
+		<li><b>last.measure.level</b>:  </li>
+		Füllstand in Meter vor der letzten Änderung
+		<p>
+		<li><b>measure.content</b>:  </li>
+		Füllmenge in Liter, letzter aktueller Stand
+		<p>
+		<li><b>measure.level</b>:  </li>
+		Füllstand in Meter, letzter aktueller Stand
+		<p>
+		<li><b>nextupdate</b>:  </li>
+		Datum und Uhrzeit für das nächste Lesen des Sensors (Festgelegt durch den Intervall)
+		<p>
+		<li><b>nextupdtime</b>:  </li>
+		Uhrzeit für das nächste Lesen des Sensors (Festgelegt durch den Intervall)
+		<p>
+		<li><b>round.percent</b>:  </li>
+		Prozentwert für die Füllstandsanzeige. Abhängig vom Attribut "maxInhaltLiter"
+		<p>
+		<li><b>round10.percent</b>:  </li>
+		Prozentwert in 10er Schritten gerundet zur Verwendung im Icon mit verschiedenen Füllgraden
+		<p>
+		<li><b>...</b>  </li>
+	</ul>	
+  <p>	<br>	
   <b>Attribute</b>
 	<ul>
 		<li><b>interval</b>: Das Intervall in Sekunden, nach dem FHEM die Messwerte aktualisiert. Default: 3600 Sek.(1 Std.)</li>
@@ -612,19 +777,25 @@ sub SI_Liquid_Check_devStateIcon($)
 		<li><b>disable</b>: Die Ausführung des Moduls wird gestoppt. Default: no.</li>
 			<i>Achtung: wenn Ihr Liquid-Check nicht in Betrieb oder über das WLAN erreichbar ist, sollten Sie
 			dieses FHEM-Modul per Attribut "disable" abschalten, da sonst beim zyklischen Suchen der ip/Adresse
-			des Sensors Timeouts auftreten, die FHEM unnötig verlangsamen.</i>
+			des Sensors Timeouts auftreten, die FHEM unnötig verlangsamen.
 		<p>
-		<li><b>devStateIcPaNa=sidev/fuellstand/fill_level_*</b>:<br> 
+		<li><b>devStateIcPaNa</b>: devStateIcPaNa=sidev/fuellstand/fill_level_* </li>
 		Pfad und Name eines "Extend devStateIcon" anstatt des Prozentwertes (0 ,10, 20..100) wird ein "*" angegeben. Der Pfad 
 		ist ausgehend vom Standard Icon Pfad "/opt/fhem/www/images/default/"(Fhem Raspi-Installation) angegeben.
 		<p>
-		<li><b>devStateIcon={SI_Liquid_Check_devStateIcon($name)}</b>:<br>
+		<li><b>devStateIcon</b>: devStateIcon={SI_Liquid_Check_devStateIcon($name)} </li>
 		Vordefinierte Funktion, damit Messwerte und State Icon zusammen dargestellt werden.
 		<p>
-		<li><b>icon</b>: Es werden 2 weitere Geräte Icon zur Verfügung gestellt<br>
-		1. "sidev/fuellstand/wasser_pegel"; 2. "sidev/fuellstand/oel_pegel"
+		<li><b>icon</b>: Es werden 2 Geräte Icon zur Verfügung gestellt </i><br>
+		1. "sidev/fuellstand/wasser_pegel_otc"; 2. "sidev/fuellstand/oel_pegel_otc"
+		<p>
+		<li><b>maxInhaltLiter</b>: Maximale Füllmenge des Tanks in Liter. </li>
+		Wird benötigt damit eine Prozentuale Füllstandsberechnung gemacht werden kann.	
+		<p>
+		<li><b>showTrend</b>: Ein oder Ausblenden des Trend-Pfeils </li>
+		Zeigt mit einem Pfeil an, ob der aktuelle Messwert gegenüber der davor liegenden Änderung steigt oder sinkt.	
 	</ul>
-  <p>
+  <p>	<br>
   <b>Requirements</b>
 	<ul>
 	Das Modul benötigt die folgenden Perl-Module:<br><br>

@@ -1,10 +1,6 @@
 DIR www/images/default/sidev/fuellstand
-UPD 2019-05-08_15:27:55 25344 FHEM/24_SI_Liquid_Check.pm
-UPD 2019-05-08_14:52:37 114701 www/images/default/sidev/fuellstand/wasser_pegel.svg
-UPD 2019-05-08_14:49:19 116622 www/images/default/sidev/fuellstand/wasser_pegel_c.svg
+UPD 2019-10-17_09:59:22 32064 FHEM/24_SI_Liquid_Check.pm
 UPD 2019-05-09_11:34:32 115756 www/images/default/sidev/fuellstand/wasser_pegel_otc.svg
-UPD 2019-05-08_14:33:56 114933 www/images/default/sidev/fuellstand/oel_pegel.svg
-UPD 2019-05-08_14:57:31 116768 www/images/default/sidev/fuellstand/oel_pegel_c.svg
 UPD 2019-05-09_11:35:44 115659 www/images/default/sidev/fuellstand/oel_pegel_otc.svg
 UPD 2018-06-13_20:58:58 6903 www/images/default/sidev/fuellstand/fill_level_0.svg
 UPD 2018-06-13_20:58:58 7157 www/images/default/sidev/fuellstand/fill_level_10.svg
