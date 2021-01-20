@@ -3,6 +3,7 @@
 
 - liquid_check_doku.pdf
   - [Documentation de](https://github.com/Roma61/Liquid-Check/blob/master/liquid_check_dokuA5.pdf) of the "Liquid-Check" Levelsensor device
+  - [Documentation en](https://github.com/Roma61/Liquid-Check/blob/master/liquid_check_dokuA5en.pdf) of the "Liquid-Check" Levelsensor device
   
 - src/FHEM/24_SI_Liquid_Check.pm
   - Fhem Modul for easy integration of the Levelsensor, copy this module to fhem: ./FHEM/
