@@ -24,6 +24,10 @@ Des Weitern können beliebige Icons als StateIcon verwendet werde dessen Dateina
 
 ![Fhem-Ansicht](https://raw.githubusercontent.com/roma61/Liquid-Check/master/FHEM-Fuellstand.jpg)
 
+![Fhem-Ansicht](https://raw.githubusercontent.com/roma61/Liquid-Check/master/Fhem-LCSM1-Device.jpg)
+
+![Fhem-Ansicht](https://raw.githubusercontent.com/roma61/Liquid-Check/master/Fhem-LCSM1-SVG.jpg)
+
 ## Install
 *Run the following commands in FHEM command-line to add this repository to your FHEM setup:*
 ```
