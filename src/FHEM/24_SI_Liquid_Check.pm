@@ -1,5 +1,6 @@
 ########################################################################################
 # $Id: 24_SI_Liquid_Check.pm 001 2017-10-25 07:14:53 rm $
+# updated 20.01.2021 for Liquid-Check SM1 
 #
 #  (c) 2017 Copyright: SI-Elektronik GmbH, Ronald Malkmus
 #  e-mail: liquid-check at si-elektronik dot de
@@ -29,10 +30,19 @@
 #  Automatic find the sensor device at local Network in blocking receive mode
 #  with a variable timeout setting (default 1sec).	
 #  Periodic sensor query in non-blocking receive mode
-#  Polling interval between 10 - 86400 Sec. (default 3600 sec.)
+#  Polling interval between 10 - 86400 Sec. (default 300 sec.)
 #
 #
-#   Vers. 1.1	NEXTUPDATE in Readings verschoben u. angepasst
+#
+#	Vers. 1.4   Erweiterung Liquid-Check SM1 mit Schaltplatine 
+#				Temp.Sensor und Relais-Zustand auslesen
+#
+#	Vers. 1.3   getSensor auskommentiert in "SI_Liquid_Check_Read" 
+#				und Timer neu starten. Bug (Abruf bleibt stehen) beseitigt
+#
+#	Vers. 1.2   Warning Zeile 314,317 beim Start von Fhem beseitigt
+#
+#	Vers. 1.1	NEXTUPDATE in Readings verschoben u. angepasst
 #				Neues Reading "nextupdtime", jede Readingänderung erzeugt einen Event
 #				Neues Reading "last.measure.content", "last.measure.level"
 #				Readings "round.measure.content" und "round.measure.level" entfernt
@@ -59,6 +69,7 @@ package main;
 use strict;
 use warnings;
 use JSON;
+use Data::Dumper;
 use HttpUtils;
 use IO::Socket::INET;
 
@@ -110,13 +121,13 @@ sub SI_Liquid_Check_Define($$)
   	$b_get_sensor = 1;
    }     
   
-  $hash->{INTERVAL}=3600;		# Intervall in Sek. (10-86400) für des zyklische Lesen der Sensordaten
+  $hash->{INTERVAL}=300;		# Intervall in Sek. (10-86400) für des zyklische Lesen der Sensordaten
   $hash->{status}='Try to connect';
   $hash->{SENSOR}='device_name: seek';
 
   
-  #initial request after 10 secs, later the timer is set to <Interval> for further update
-  InternalTimer(gettimeofday()+10, "SI_Liquid_Check_Read", $hash, 0);
+  #initial request after 12 secs, later the timer is set to <Interval> for further update
+  InternalTimer(gettimeofday()+12, "SI_Liquid_Check_Read", $hash, 0);
 
 
 # prüfen, ob eine neue Definition angelegt wird 
@@ -143,7 +154,8 @@ sub SI_Liquid_Check_Define($$)
 	$hash->{INTERVAL}=$attr{$name}{"interval"};
    }
 
-  if($b_get_sensor == 1) {InternalTimer(gettimeofday()+5, "get_sensor_addr", $hash, 0)};
+# Geräte IP suchen wenn nicht angegeben
+  if($b_get_sensor == 1) {InternalTimer(gettimeofday()+7, "get_sensor_addr", $hash, 0)};
  
   
   return undef;
@@ -205,39 +217,67 @@ sub SI_Liquid_Check_ParseHttpResponse($)
 		my $tmp_level =  ReadingsVal($name, "measure.level", 0);
 
 		readingsBeginUpdate($hash);	
-		foreach my $key (sort keys %{$json->{'payload'}->{'measure'}}) {
+       eval 
+	   {
+ 		foreach my $key (sort keys %{$json->{'payload'}->{'measure'}}) {
 			#print $key." - "; 
 			#print $json->{'payload'}->{$key}."\n";
    	    	readingsBulkUpdate($hash, 'measure.'.$key, $json->{'payload'}->{'measure'}->{$key});
 		}
-		
+
+	  	if (exists($json->{'payload'}->{'expansion'}->{'oneWire'}->{'sensors'})) 
+		{
+		  	my @sensors_ow = @{$json->{'payload'}->{'expansion'}->{'oneWire'}->{'sensors'}};
+			#Log3 $hash, 3, "SI_Liquid_Check: $name parse1: ".@sensors_ow."\n";
+			  my $i = 0; 	
+			  for ($i = 0; $i < @sensors_ow; $i++) {
+ 				my $sensorName = trim($json->{'payload'}->{'expansion'}->{'oneWire'}->{'sensors'}->[$i]->{'friendlyName'});
+  				my $sensorValue = $json->{'payload'}->{'expansion'}->{'oneWire'}->{'sensors'}->[$i]->{'temperature'};
+				if ($sensorName eq '') {$sensorName = $json->{'payload'}->{'expansion'}->{'oneWire'}->{'sensors'}->[$i]->{'romId'}}
+  				Log3 $hash, 4, "SI_Liquid_Check: $name sensor-$sensorName: $sensorValue C°";
+	    		readingsBulkUpdate($hash, "sensor-$sensorName", $sensorValue." C°");
+			  }
+			if ($i > 0){
+	    		readingsBulkUpdate($hash, ".sensor-aktive", 1);
+			}
+		}
+		if (exists($json->{'payload'}->{'expansion'}->{'board'}->{'relays'})) 
+		{
+    		readingsBulkUpdate($hash,".relay-aktive",1);
+		  	my @relays_br = @{$json->{'payload'}->{'expansion'}->{'board'}->{'relays'}};
+			#Log3 $hash, 3, "SI_Liquid_Check: $name parse2: ".@relays_br."\n";
+			for (my $i = 0; $i < @relays_br; $i++) {
+ 				my $sensorName = trim($json->{'payload'}->{'expansion'}->{'board'}->{'relays'}->[$i]->{'friendlyName'});
+  				my $sensorValue = $json->{'payload'}->{'expansion'}->{'board'}->{'relays'}->[$i]->{'state'};
+				if ($sensorName eq '') {$sensorName = $i+1}
+				if ($sensorValue) {$sensorValue = 'on';} else {$sensorValue = 'off';};
+  				Log3 $hash, 4, "SI_Liquid_Check: $name relay-$sensorName: $sensorValue";
+	    		readingsBulkUpdate($hash, "relay-$sensorName", $sensorValue);
+			}	
+		}
+
 		foreach my $key (sort keys %{$json->{'payload'}->{'device'}}) {
-			#print $key." - "; 
-			#print $json->{'payload'}->{$key}."\n";
 			if (($key ne "model")&&($key ne "security")){
    	    		readingsBulkUpdate($hash, 'device.'.$key, $json->{'payload'}->{'device'}->{$key});
 			}
+			$hash->{SENSOR}=ReadingsVal($name, "device.name", 'device_name: seek');	
 		}
 		foreach my $key (sort keys %{$json->{'payload'}->{'system'}}) {
-			#print $key." - "; 
-			#print $json->{'payload'}->{$key}."\n";
-   	    	readingsBulkUpdate($hash, 'system.'.$key, $json->{'payload'}->{'system'}->{$key});
+			if (($key ne "pump")){
+   	    		readingsBulkUpdate($hash, 'system.'.$key, $json->{'payload'}->{'system'}->{$key});
+			}	
 		}
 		foreach my $key (sort keys %{$json->{'payload'}->{'wifi'}->{'station'}}) {
-			#print $key." - "; 
-			#print $json->{'payload'}->{$key}."\n";
    	    	readingsBulkUpdate($hash, 'station.'.$key, $json->{'payload'}->{'wifi'}->{'station'}->{$key});
 		}
 		foreach my $key (sort keys %{$json->{'payload'}->{'wifi'}->{'accessPoint'}}) {
-			#print $key." - "; 
-			#print $json->{'payload'}->{$key}."\n";
    	    	readingsBulkUpdate($hash, 'accessPoint.'.$key, $json->{'payload'}->{'wifi'}->{'accessPoint'}->{$key});
 		}
 		readingsBulkUpdate($hash, "state", $json->{'payload'}->{'measure'}->{'content'});
 		readingsEndUpdate($hash, 1);
 		$hash->{status}="Connect";
 		
-		Log3 $hash, 4, "SI_Liquid_Check: $name parse received data";
+		Log3 $hash, 4, "SI_Liquid_Check: $name parse received json ready";
 
         # Bei neuem verändertem Messwert den alten Wert speichern
 		if (ReadingsVal($name, "measure.level", 0) != $tmp_level) {
@@ -248,6 +288,12 @@ sub SI_Liquid_Check_ParseHttpResponse($)
 		}
 		
 		set_Round_Measure($hash);
+
+	   1; # Programmablauf ok  "eval"
+	   } or do {
+		  my $error = $@ || 'Unknown failure';
+		  Log3 $hash, 1, "SI_Liquid_Check: $name json parse error: $error";
+		};
     }
     
     # Damit ist die Abfrage zuende.
@@ -311,10 +357,10 @@ sub SI_Liquid_Check_Read($)
 	my @adays = qw(So Mo Di Mi Do Fr Sa);
 	my @amonth = qw(Jan Feb Mär Apr Mai Jun Jul Aug Sep Okt Nov Dez);
 	$year += 1900;
-	$hash->{NEXTUPDATE}=sprintf("%s %2d. %s %04d - %02d:%02d",@adays[$wday],$mday,@amonth[$mon],$year,$hour,$min);
+	$hash->{NEXTUPDATE}=sprintf("%s %2d. %s %04d - %02d:%02d",$adays[$wday],$mday,$amonth[$mon],$year,$hour,$min);
 	Log3 $hash, 4, "SI_Liquid_Check: $name Read called:$hash->{SENSOR}:-:$hash->{status}:";
 	readingsBeginUpdate($hash);	
-	readingsBulkUpdate($hash, "nextupdate", sprintf("%s %2d. %s %04d - %02d:%02d",@adays[$wday],$mday,@amonth[$mon],$year,$hour,$min));
+	readingsBulkUpdate($hash, "nextupdate", sprintf("%s %2d. %s %04d - %02d:%02d",$adays[$wday],$mday,$amonth[$mon],$year,$hour,$min));
     readingsBulkUpdate($hash, "nextupdtime",sprintf("%02d:%02d:%02d",$hour,$min,$sec));		
 	readingsEndUpdate($hash, 1);
 	if (($hash->{SENSOR} =~ m/.*not found.*/) or ($hash->{status} eq 'ERROR')) {
@@ -324,13 +370,18 @@ sub SI_Liquid_Check_Read($)
   		RemoveInternalTimer($hash);    
 		InternalTimer(gettimeofday()+int($hash->{INTERVAL}/3), "SI_Liquid_Check_Read", $hash, 0);
 		#$hash->{NEXTUPDATE}=localtime(gettimeofday()+int($hash->{INTERVAL}/3));
-		get_sensor_addr($hash);
+		#get_sensor_addr($hash);
+  		$hash->{status}='Try to connect'; 
+  		$hash->{SENSOR}='device_name: seek';
+		#get_sensor_addr($hash);
+		
 	}
 	else {
    		#Log3 $hash, 3, "SI_Liquid_Check: $name Read called";
 		SI_Liquid_Check_GetHttpResponse($hash);
 	}
 }
+
 #####################################
 sub SI_Liquid_Check_Get($$@)
 {
@@ -351,7 +402,6 @@ sub SI_Liquid_Check_Get($$@)
 			Log3 $hash, 3, "SI_Liquid_Check: $name Set <". $cmd ."> called";
 			get_sensor_addr($hash);
 	}
-	
 	else{
 		return "Unknown argument $cmd, choose one of sensor_lesen:noArg suche_sensor:noArg";
 	} 
@@ -379,8 +429,35 @@ sub SI_Liquid_Check_Set($$@)
 		    readingsSingleUpdate($hash, "state", "Messen",1);		
 
 	}
-	else {
+	elsif ($cmd eq "readings_sensor-_loeschen") {
+			foreach my $readingVal (keys %{$hash->{'READINGS'}}) {
+			  Log3 $hash, 3, "SI_Liquid_Check: $name Set $readingVal";
+			  if ($readingVal =~ m/sensor-/) {
+  				Log3 $hash, 3, "SI_Liquid_Check: $name readingsDelete: $readingVal";
+ 				readingsDelete($hash, $readingVal);			
+			  }
+			}  
+	}
+	elsif ($cmd eq "readings_relay-_loeschen") {
+			foreach my $readingVal (keys %{$hash->{'READINGS'}}) {
+			  Log3 $hash, 4, "SI_Liquid_Check: $name Set $readingVal";
+			  if ($readingVal =~ m/relay-/) {
+  				Log3 $hash, 3, "SI_Liquid_Check: $name readingsDelete: $readingVal";
+ 				readingsDelete($hash, $readingVal);			
+			  }
+			}  
+	}
+	elsif (ReadingsVal($name,".relay-aktive",0)== 0 and ReadingsVal($name,".sensor-aktive",0)== 0) {
 			return "Unknown argument $cmd, choose one of messung_starten:noArg"
+	}
+	elsif (ReadingsVal($name,".sensor-aktive",0)== 0) {
+			return "Unknown argument $cmd, choose one of messung_starten:noArg readings_relay-_loeschen:noArg"
+	}
+	elsif (ReadingsVal($name,".relay-aktive",0)== 0) {
+			return "Unknown argument $cmd, choose one of messung_starten:noArg readings_sensor-_loeschen:noArg"
+	}
+	else {
+			return "Unknown argument $cmd, choose one of messung_starten:noArg readings_sensor-_loeschen:noArg readings_relay-_loeschen:noArg"
 	}
 	return undef;
 }
@@ -510,6 +587,7 @@ sub get_sensor_addr($)
 	else {
 		$hash->{status}="Connect";
         readingsSingleUpdate($hash, "state", "Wait",1);				
+  		RemoveInternalTimer($hash,"get_sensor_addr");    
 	}
 	#fhem("define at1 at +00:00:02 setreading $name uuid $device_uuid");
 	Log3 $hash, 3, "SI_Liquid_Check: $name get_sensor_addr $hash->{SENSOR}, $hash->{HOST}";
@@ -566,6 +644,33 @@ sub SI_Liquid_Check_devStateIcon($)
 
 #####################################
 
+# [http://www.somacon.com/p114.php http://www.somacon.com/p114.php]
+# Perl trim function to remove whitespace from the start and end of the string
+sub trim($)
+{ 
+  my $string = shift;
+  $string =~ s/\s+//g;   # Löscht alle Leerzeichen
+  #$string =~ s/^\s+//;   # Löscht von links
+  #$string =~ s/\s+$//;   # Löscht von rechts
+  return $string;
+} 
+# Left trim function to remove leading whitespace
+sub ltrim($)
+{
+  my $string = shift;
+  $string =~ s/^\s+//;
+  return $string;
+}
+# Right trim function to remove trailing whitespace
+sub rtrim($)
+{
+  my $string = shift;
+  $string =~ s/\s+$//;
+  return $string;
+}
+
+###############################################################
+
 1;
 
 
@@ -581,11 +686,13 @@ sub SI_Liquid_Check_devStateIcon($)
 
   <a name="SI_Liquid_Check"></a>
   <b>Description</b><br>
-  	This is an FHEM-Module for integration the SI-Elektronik GmbH Level-Sensor 'SI_Liquid_Check'.<br>
+  	This is an FHEM-Module for integration the SI-Elektronik GmbH Level-Sensor 'SI_Liquid_Check',with and without switching module SM1,.<br>
 	SI_Liquid_Check is a wifi controlled Level-Sensor for Water tanks or other liquids.<br>
   	The measuring method is based on a hydrostatic measurement of the filling level.<br>
 	It support reading of Fluid_Level and Fluid_Volume.<br>
 	The device does not have to be mounted in the tank, it can be mounted directly in a supply room and only needs a thin hose connection to the tank.<br>
+	A Liquid-Check with the extension SM1 has 3 switching relays as well as the possibility to connect four 1-wire temperature sensors. 
+	The query of the temperature sensors and the relay status are extended in this module.<br>
   <br>
   <b>Define</b>
   	<ul>
@@ -615,7 +722,7 @@ sub SI_Liquid_Check_devStateIcon($)
   <p>	<br>
   <b>Readings</b>
 	<ul>
-		Wesentliche Readings die meisten sind selbsterklärend
+		Essential Readings most are self-explanatory
 		<p>
 		<li><b>...</b>  </li>
 		<p>
@@ -644,11 +751,12 @@ sub SI_Liquid_Check_devStateIcon($)
 		Percentage in increments of 10 rounded for use in icon with different fill levels
 		<p>
 		<li><b>...</b>  </li>
+		If the unit is equipped with the switching module "SM1", then further readings for temperature and relay status are displayed
 	</ul>	
   <p>	<br>
    <b>Attributs</b>
 	<ul>
-		<li><b>interval</b>: The interval in seconds, after which FHEM will update the current measurements. Default: 3600 Sec.(1 hour)</li>
+		<li><b>interval</b>: The interval in seconds, after which FHEM will update the current measurements. Default: 300 Sec.(5 Min.)</li>
 			An update of the measurements is also done on each "get sensor_lesen" as well.
 		<p>
 		<li><b>timeout</b>:  Timeout in seconds used while finding the ip/Adress of the Sensor. Default: 1s</li>
@@ -697,10 +805,12 @@ sub SI_Liquid_Check_devStateIcon($)
 
   <a name="SI_Liquid_Check"></a>
     <b>Beschreibung</b><br>
-	Dises Modul integriert den SI-Elektronik GmbH Level-Sensor 'SI_Liquid_Check' in FHEM. <br>
+	Dises Modul integriert den SI-Elektronik GmbH Level-Sensor 'SI_Liquid_Check', mit und ohne Schaltmodul SM1, in FHEM. <br>
 	'SI-Liqui_Check' ist ein Level-Sensor mit WLAN zur Füllstandsmessung in Wassertanks oder für andere drucklose Flüssigkeiten.<br>
 	Die Meßmethode basiert auf einer hydrostatischen Messung des Flüssigkeitspegel in einem Behälter.<br>
 	Das Gerät muss nicht im Tank montiert werden, es kann direkt in einem Versorgungsraum angebracht werden und benötigt nur eine dünne Schlauchverbindung zum Tank.<br>
+	Ein Liquid-Check mit der Erwiterung SM1 verfügt über 3 Schaltrelais sowie der Möglichkeit vier Stk. 1-Wire Temp.Sensoren anzuschließen. 
+	Die Abfrage der Temperatursensoren sowie des Relaisstatus sind in diesem Modul erweitert.<br>
 	<br>
   <a href="https://si-elektronik.de/IoT/Liquid-Check/Documents/liquid_check_doku.pdf" target="_blank">Komplette Dokumentation als Pdf</a> <br>
   	<br>
@@ -762,11 +872,13 @@ sub SI_Liquid_Check_devStateIcon($)
 		Prozentwert in 10er Schritten gerundet zur Verwendung im Icon mit verschiedenen Füllgraden
 		<p>
 		<li><b>...</b>  </li>
+		Ist das Gerät mit dem Schaltmodul "SM1" ausgestattet, dann werden weitere Readings für
+		Temperatur und Relaiszustand angezeigt
 	</ul>	
   <p>	<br>	
   <b>Attribute</b>
 	<ul>
-		<li><b>interval</b>: Das Intervall in Sekunden, nach dem FHEM die Messwerte aktualisiert. Default: 3600 Sek.(1 Std.)</li>
+		<li><b>interval</b>: Das Intervall in Sekunden, nach dem FHEM die Messwerte aktualisiert. Default: 300 Sek.(5 Min.)</li>
 			Eine Aktualisierung der Messwerte findet auch bei jedem "get sensor_lesen" über die "non-blocking" Methode statt.
 		<p>
 		<li><b>timeout</b>:  Der Timeout in Sekunden, der bei Suchen des Sensors verwendet wird. Default: 1s</li>
