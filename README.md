@@ -2,8 +2,8 @@
 **Fhem Modul and Documentation for the "Liquid-Check" Levelsensor.**
 
 - liquid_check_doku.pdf
-  - [Dokumentation de](https://github.com/Roma61/Liquid-Check/blob/master/liquid_check_dokuA5.pdf) of the "Liquid-Check" Levelsensor device
-  - [Manual en](https://github.com/Roma61/Liquid-Check/blob/master/liquid_check_dokuA5en.pdf) of the "Liquid-Check" Levelsensor device
+  - [Dokumentation de](https://github.com/Roma61/Liquid-Check/blob/master/doc/liquid_check_dokuA5.pdf) of the "Liquid-Check" Levelsensor device
+  - [Manual en](https://github.com/Roma61/Liquid-Check/blob/master/doc/liquid_check_dokuA5en.pdf) of the "Liquid-Check" Levelsensor device
   
 - src/FHEM/24_SI_Liquid_Check.pm
   - Fhem Modul for easy integration of the Levelsensor, copy this module to fhem: ./FHEM/
@@ -23,13 +23,13 @@
 *Eine Besonderheit ist, dass StateIcon und Werte angezeigt werden.
 Des Weitern können beliebige Icons als StateIcon verwendet werde dessen Dateiname mit 10, 20 ... 100 endet.*
 
-![Fhem-Ansicht](https://raw.githubusercontent.com/roma61/Liquid-Check/master/FHEM-Fuellstand.jpg)
+![Fhem-Ansicht](https://raw.githubusercontent.com/roma61/Liquid-Check/master/doc/FHEM-Fuellstand.jpg)
 
 ### Liquid-Check SM1 (Mit Schaltmodul und 4 Eingänge für 1-Wire Temp.-Sensoren)
 
-![Fhem-Ansicht](https://raw.githubusercontent.com/roma61/Liquid-Check/master/Fhem-LCSM1-Device.jpg)
+![Fhem-Ansicht](https://raw.githubusercontent.com/roma61/Liquid-Check/master/doc/Fhem-LCSM1-Device.jpg)
 
-![Fhem-Ansicht](https://raw.githubusercontent.com/roma61/Liquid-Check/master/Fhem-LCSM1-SVG.jpg)
+![Fhem-Ansicht](https://raw.githubusercontent.com/roma61/Liquid-Check/master/doc/Fhem-LCSM1-SVG.jpg)
 
 ## Install
 *Run the following commands in FHEM command-line to add this repository to your FHEM setup:*
