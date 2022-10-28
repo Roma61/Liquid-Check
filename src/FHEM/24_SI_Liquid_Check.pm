@@ -1,6 +1,6 @@
 ########################################################################################
 # $Id: 24_SI_Liquid_Check.pm 001 2017-10-25 07:14:53 rm $
-# updated 20.01.2021 for Liquid-Check SM1 
+# updated 27.10.2022 for Liquid-Check SM1 
 #
 #  (c) 2017 Copyright: SI-Elektronik GmbH, Ronald Malkmus
 #  e-mail: liquid-check at si-elektronik dot de
@@ -33,6 +33,8 @@
 #  Polling interval between 10 - 86400 Sec. (default 300 sec.)
 #
 #
+#   Vers. 1.5   Einlesen der Raw Werte measure.raw.content, measure.raw.level
+#				Commandref aktualisiert
 #
 #	Vers. 1.4   Erweiterung Liquid-Check SM1 mit Schaltplatine 
 #				Temp.Sensor und Relais-Zustand auslesen
@@ -222,10 +224,19 @@ sub SI_Liquid_Check_ParseHttpResponse($)
  		foreach my $key (sort keys %{$json->{'payload'}->{'measure'}}) {
 			#print $key." - "; 
 			#print $json->{'payload'}->{$key}."\n";
-   	    	readingsBulkUpdate($hash, 'measure.'.$key, $json->{'payload'}->{'measure'}->{$key});
+			#Log3 $hash, 3, "SI_Liquid_Check: $name key: $key";
+			if ($key ne 'raw'){
+				readingsBulkUpdate($hash, 'measure.'.$key, $json->{'payload'}->{'measure'}->{$key});
+			}
+			else {
+		 		foreach my $key2 (sort keys %{$json->{'payload'}->{'measure'}->{'raw'}}) {
+ 				  #Log3 $hash, 3, "SI_Liquid_Check: $name key: $key-$key2";
+				  readingsBulkUpdate($hash, 'measure.'.$key.'.'.$key2, $json->{'payload'}->{'measure'}->{'raw'}->{$key2});
+				}  
+			}
 		}
 
-	  	if (exists($json->{'payload'}->{'expansion'}->{'oneWire'}->{'sensors'})) 
+ 	  	if (exists($json->{'payload'}->{'expansion'}->{'oneWire'}->{'sensors'})) 
 		{
 		  	my @sensors_ow = @{$json->{'payload'}->{'expansion'}->{'oneWire'}->{'sensors'}};
 			#Log3 $hash, 3, "SI_Liquid_Check: $name parse1: ".@sensors_ow."\n";
@@ -679,8 +690,8 @@ sub rtrim($)
 
 =begin html
 
-<a name="SI_Liquid_Check"></a>
-<h3>SI_Liquid_Check</h3>
+<a id="SI_Liquid_Check"></a>
+<h3>SI_Liquid_Check 1.5</h3>
 <ul>
   <br>
 
@@ -709,6 +720,10 @@ sub rtrim($)
 	<ul>
 		<li><b>messung_starten</b>:  </li>
 			Causes the liquid check to take a measurement. Then the values are read and the interval restarts.
+		<li><b>readings_relay_loeschen</b>:  </li>
+			Clear old relay-name.
+		<li><b>readings_sensor_löschen</b>:  </li>
+			Clear old namen of the temperatur-sensors.
 	</ul>		
   <p>
   <b>Get</b>
@@ -722,7 +737,7 @@ sub rtrim($)
   <p>	<br>
   <b>Readings</b>
 	<ul>
-		Essential Readings most are self-explanatory
+		Essential Readings, most are self-explanatory
 		<p>
 		<li><b>...</b>  </li>
 		<p>
@@ -736,7 +751,13 @@ sub rtrim($)
 		Capacity in liters, last updated
 		<p>
 		<li><b>measure.level</b>:  </li>
-		Level in meters, last updated
+		Level in meters, last current level rounded to 1cm or 0.01m
+		<p>
+		<li><b>measure.raw.content</b>:  </li>
+		Filling quantity in liters with maximum resolution, last current status
+		<p>
+		<li><b>measure.raw.level</b>:  </li>
+		Level in meters with maximum resolution, last current level.  
 		<p>
 		<li><b>nextupdate</b>:  </li>
 		Date and time for the next reading of the sensor (determined by the interval)
@@ -764,7 +785,7 @@ sub rtrim($)
 			within this timeout. Please consider, that raising the timeout could mean blocking the whole FHEM during the timeout!
 		<p>
 		<li><b>disable</b>: The execution of the module is suspended. Default: no.</li>
-			<i>Warning: if your Liquid-Check is not on or not connected to the wifi network, consider disabling this module
+			<i>Warning:</i> if your Liquid-Check is not on or not connected to the wifi network, consider disabling this module
 			by the attribute "disable". Otherwise the cyclic update of the Sensor seek funktion will lead to blockings in FHEM.
 		<p>
 		<li><b>devStateIcPaNa</b>: devStateIcPaNa=sidev/fuellstand/fill_level_* </li>
@@ -798,15 +819,15 @@ sub rtrim($)
 
 =begin html_DE
 
-<a name="SI_Liquid_Check"></a>
-<h3>SI_Liquid_Check</h3>
+<a id="SI_Liquid_Check"></a>
+<h3>SI_Liquid_Check 1.5</h3>
 <ul>
   <br>
 
   <a name="SI_Liquid_Check"></a>
     <b>Beschreibung</b><br>
 	Dises Modul integriert den SI-Elektronik GmbH Level-Sensor 'SI_Liquid_Check', mit und ohne Schaltmodul SM1, in FHEM. <br>
-	'SI-Liqui_Check' ist ein Level-Sensor mit WLAN zur Füllstandsmessung in Wassertanks oder für andere drucklose Flüssigkeiten.<br>
+	'SI-Liqui_Check' ist ein Level-Sensor mit WLAN zur Füllstandsmessung in Wassertanks oder für anderen drucklosen Flüssigkeiten.<br>
 	Die Meßmethode basiert auf einer hydrostatischen Messung des Flüssigkeitspegel in einem Behälter.<br>
 	Das Gerät muss nicht im Tank montiert werden, es kann direkt in einem Versorgungsraum angebracht werden und benötigt nur eine dünne Schlauchverbindung zum Tank.<br>
 	Ein Liquid-Check mit der Erwiterung SM1 verfügt über 3 Schaltrelais sowie der Möglichkeit vier Stk. 1-Wire Temp.Sensoren anzuschließen. 
@@ -827,6 +848,10 @@ sub rtrim($)
 	<ul>
 		<li><b>messung_starten</b>:  </li>
 			Veranlasst den Liquid-Check eine Messung durchzuführen. Danach werden die Werte gelesen und der Intervall startet neu.
+		<li><b>readings_relay_loeschen</b>:  </li>
+			Veraltete Relais-Namen löschen.
+		<li><b>readings_sensor_löschen</b>:  </li>
+			Veraltete Namen der Temperatur-Sensoren löschen.
 	</ul>		
 	<br><p>
   <b>Get</b>
@@ -843,7 +868,7 @@ sub rtrim($)
   <p>	<br>
   <b>Readings</b>
 	<ul>
-		Wesentliche Readings die meisten sind selbsterklärend
+		Wesentliche Readings, die meisten sind selbsterklärend
 		<p>
 		<li><b>...</b>  </li>
 		<p>
@@ -855,9 +880,16 @@ sub rtrim($)
 		<p>
 		<li><b>measure.content</b>:  </li>
 		Füllmenge in Liter, letzter aktueller Stand
+		Berechnet mit 'measure.level' unter Berücksichtigung der Formparameter des Tanks
 		<p>
 		<li><b>measure.level</b>:  </li>
-		Füllstand in Meter, letzter aktueller Stand
+		Füllstand in Meter, letzter aktueller Stand gerundet auf 1cm bzw. 0,01m
+		<p>
+		<li><b>measure.raw.content</b>:  </li>
+		Füllmenge in Liter mit maximaler Auflösung, letzter aktueller Stand
+		<p>
+		<li><b>measure.raw.level</b>:  </li>
+		Füllstand in Meter mit maximaler Auflösung, letzter aktueller Stand.  
 		<p>
 		<li><b>nextupdate</b>:  </li>
 		Datum und Uhrzeit für das nächste Lesen des Sensors (Festgelegt durch den Intervall)
@@ -884,10 +916,10 @@ sub rtrim($)
 		<li><b>timeout</b>:  Der Timeout in Sekunden, der bei Suchen des Sensors verwendet wird. Default: 1s</li>
 			<i>Achtung</i>: der Timeout von 1s ist knapp gewählt. Ggf. kann es zu Fehlermeldungen kommen, wenn der Sensor nicht 
 			schnell genug antwortet. Bitte beachten Sie aber auch, dass längere Timeouts FHEM für den Zeitraum des Requests blockieren!<br>
-			Das zyklische Lesen der Messwerte erfolgt nicht mit einem &lt;timeout&gt; sondern über die "non-blocking" Methode.
+			Das zyklische Lesen der Messwerte mittels 'interval' erfolgt nicht mit einem &lt;timeout&gt; sondern über die "non-blocking" Methode.
 		<p>
 		<li><b>disable</b>: Die Ausführung des Moduls wird gestoppt. Default: no.</li>
-			<i>Achtung: wenn Ihr Liquid-Check nicht in Betrieb oder über das WLAN erreichbar ist, sollten Sie
+			<i>Achtung:</i> wenn Liquid-Check nicht in Betrieb oder über das WLAN erreichbar ist, sollten Sie
 			dieses FHEM-Modul per Attribut "disable" abschalten, da sonst beim zyklischen Suchen der ip/Adresse
 			des Sensors Timeouts auftreten, die FHEM unnötig verlangsamen.
 		<p>
@@ -898,11 +930,11 @@ sub rtrim($)
 		<li><b>devStateIcon</b>: devStateIcon={SI_Liquid_Check_devStateIcon($name)} </li>
 		Vordefinierte Funktion, damit Messwerte und State Icon zusammen dargestellt werden.
 		<p>
-		<li><b>icon</b>: Es werden 2 Geräte Icon zur Verfügung gestellt </i><br>
+		<li><b>icon</b>: Es werden 2 Geräte Icon zur Verfügung gestellt </li><br>
 		1. "sidev/fuellstand/wasser_pegel_otc"; 2. "sidev/fuellstand/oel_pegel_otc"
 		<p>
 		<li><b>maxInhaltLiter</b>: Maximale Füllmenge des Tanks in Liter. </li>
-		Wird benötigt damit eine Prozentuale Füllstandsberechnung gemacht werden kann.	
+		Wird benötigt, damit eine prozentuale Füllstandsberechnung gemacht werden kann.	
 		<p>
 		<li><b>showTrend</b>: Ein oder Ausblenden des Trend-Pfeils </li>
 		Zeigt mit einem Pfeil an, ob der aktuelle Messwert gegenüber der davor liegenden Änderung steigt oder sinkt.	
@@ -918,7 +950,8 @@ sub rtrim($)
 
 =end html_DE
 
-=item summary SI_Liquid_Check wifi controlled level sensor
-=item summary_DE SI_Liquid_Check WLAN Levelsensor (hydrostatisch)
+=item summary Connection of the Liquid_Check WIFI level sensor (hydrostatic)
+=item summary_DE  Anbindung des Liquid_Check WLAN Levelsensor (hydrostatisch)
+=item device
 
 =cut
