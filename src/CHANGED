@@ -1,4 +1,8 @@
-  - feature: 24_SI_Liquid_Check: version 1.4
+  - feature:24_SI_Liquid_Check: version 1.5
+               Einlesen der Raw Werte measure.raw.content, measure.raw.level
+               Commandref aktualisiert 
+               
+            24_SI_Liquid_Check: version 1.4
                Erweiterung Liquid-Check SM1 mit Schaltplatine, Temp.Sensor und Relais-Zustand auslesen
                Bug (Abruf bleibt stehen) beseitigt
 
