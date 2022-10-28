@@ -23,7 +23,7 @@
 
 ## Übersicht Fhem
 *Eine Besonderheit ist, dass StateIcon und Werte angezeigt werden.
-Des Weitern können beliebige Icons als StateIcon verwendet werde dessen Dateiname mit 10, 20 ... 100 endet.*
+Des Weitern können beliebige Icons als StateIcon verwendet werde dessen Dateiname mit 10, 20 .... 100 endet.*
 
 ![Fhem-Ansicht](doc/FHEM-Fuellstand.jpg)
 
