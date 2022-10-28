@@ -2,7 +2,7 @@
 **Fhem Modul and Documentation for the "Liquid-Check" Levelsensor.**
 
 - liquid_check_doku.pdf
-  - [Dokumentation de](https://github.com/Roma61/Liquid-Check/doc/liquid_check_dokuA5_160.pdf) of the "Liquid-Check" Levelsensor device
+  - [Dokumentation de](doc/liquid_check_dokuA5_160.pdf) of the "Liquid-Check" Levelsensor device
   - [Manual en](https://github.com/Roma61/Liquid-Check/doc/liquid_check_dokuA5en.pdf) of the "Liquid-Check" Levelsensor device
   
 - src/FHEM/24_SI_Liquid_Check.pm
@@ -23,7 +23,10 @@
 *Eine Besonderheit ist, dass StateIcon und Werte angezeigt werden.
 Des Weitern können beliebige Icons als StateIcon verwendet werde dessen Dateiname mit 10, 20 ... 100 endet.*
 
-![Fhem-Ansicht](https://raw.githubusercontent.com/roma61/Liquid-Check/doc/FHEM-Fuellstand.jpg)
+![Fhem-Ansicht](https://raw.githubusercontent.com/roma61/Liquid-Check/blob/doc/FHEM-Fuellstand.jpg)
+
+<img src=>
+doc/liquid_check_dokuA5_160.pdf
 
 ### Liquid-Check SM1 (Mit Schaltmodul und 4 Eingänge für 1-Wire Temp.-Sensoren)
 
