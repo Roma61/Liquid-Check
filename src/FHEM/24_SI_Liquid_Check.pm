@@ -33,8 +33,8 @@
 #  Polling interval between 10 - 86400 Sec. (default 300 sec.)
 #
 #
-#   Vers. 1.5   Einlesen der Raw Werte measure.raw.content, measure.raw.level
-#				Commandref aktualisiert
+#   Vers. 1.5.1 Einlesen der Raw Werte measure.raw.content, measure.raw.level
+#				Commandref aktualisiert. Darstellung Einheit °C korrigiert
 #
 #	Vers. 1.4   Erweiterung Liquid-Check SM1 mit Schaltplatine 
 #				Temp.Sensor und Relais-Zustand auslesen
@@ -245,8 +245,8 @@ sub SI_Liquid_Check_ParseHttpResponse($)
  				my $sensorName = trim($json->{'payload'}->{'expansion'}->{'oneWire'}->{'sensors'}->[$i]->{'friendlyName'});
   				my $sensorValue = $json->{'payload'}->{'expansion'}->{'oneWire'}->{'sensors'}->[$i]->{'temperature'};
 				if ($sensorName eq '') {$sensorName = $json->{'payload'}->{'expansion'}->{'oneWire'}->{'sensors'}->[$i]->{'romId'}}
-  				Log3 $hash, 4, "SI_Liquid_Check: $name sensor-$sensorName: $sensorValue C°";
-	    		readingsBulkUpdate($hash, "sensor-$sensorName", $sensorValue." C°");
+  				Log3 $hash, 4, "SI_Liquid_Check: $name sensor-$sensorName: $sensorValue °C";
+	    		readingsBulkUpdate($hash, "sensor-$sensorName", $sensorValue." °C");
 			  }
 			if ($i > 0){
 	    		readingsBulkUpdate($hash, ".sensor-aktive", 1);

@@ -1,6 +1,6 @@
-  - feature:24_SI_Liquid_Check: version 1.5
+  - feature:24_SI_Liquid_Check: version 1.5.1
                Einlesen der Raw Werte measure.raw.content, measure.raw.level
-               Commandref aktualisiert 
+               Commandref aktualisiert, Darstellung Einheit °C korrigiert 
                
             24_SI_Liquid_Check: version 1.4
                Erweiterung Liquid-Check SM1 mit Schaltplatine, Temp.Sensor und Relais-Zustand auslesen
