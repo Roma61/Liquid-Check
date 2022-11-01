@@ -1,6 +1,6 @@
 REV 1.5.1
 DIR unused
-UPD 2022-10-30_17:01:09 39555 FHEM/24_SI_Liquid_Check.pm
+UPD 2022-11-01_12:18:16 39555 FHEM/24_SI_Liquid_Check.pm
 UPD 2019-05-09_11:34:32 115756 www/images/default/sidev/fuellstand/wasser_pegel_otc.svg
 UPD 2019-05-09_11:35:44 115659 www/images/default/sidev/fuellstand/oel_pegel_otc.svg
 UPD 2018-06-13_20:58:58 6903 www/images/default/sidev/fuellstand/fill_level_0.svg
