@@ -44,8 +44,8 @@ shutdown restart
 
 **One time update**
 ```
-update check https://raw.githubusercontent.com/SI-ElektronikGmbH/Liquid-Check/master/src/controls_liquid_checktxt
+update check https://raw.githubusercontent.com/SI-ElektronikGmbH/Liquid-Check/master/src/controls_liquid_check.txt
 update all https://raw.githubusercontent.com/SI-ElektronikGmbH/Liquid-Check/master/src/controls_liquid_check.txt
-
+shutdown restart
 ```
 
