@@ -1,6 +1,6 @@
 ########################################################################################
 # $Id: 24_SI_Liquid_Check.pm 001 2017-10-25 07:14:53 rm $
-# updated 28.10.2022 for Liquid-Check SM1 
+# updated 30.10.2022 for Liquid-Check SM1 
 #
 #  (c) 2017 Copyright: SI-Elektronik GmbH, Ronald Malkmus
 #  e-mail: liquid-check at si-elektronik dot de

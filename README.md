@@ -34,11 +34,17 @@ Des Weitern können beliebige Icons als StateIcon verwendet werde dessen Dateina
 ![Fhem-Ansicht](doc/Fhem-LCSM1-SVG.jpg)
 
 ## Install
+*Adds an additional repository for simplified use of "Update" via the standard calls.*
 *Run the following commands in FHEM command-line to add this repository to your FHEM setup:*
 ```
 update add https://raw.githubusercontent.com/SI-ElektronikGmbH/Liquid-Check/master/src/controls_liquid_check.txt
 update all liquid_check
 shutdown restart
+
+*One time update*
+```
+update check https://raw.githubusercontent.com/SI-ElektronikGmbH/Liquid-Check/master/src/controls_liquid_check.txt
+update all https://raw.githubusercontent.com/SI-ElektronikGmbH/Liquid-Check/master/src/controls_liquid_check.txt
 
 ```
 
