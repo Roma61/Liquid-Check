@@ -1,6 +1,6 @@
 ########################################################################################
 # $Id: 24_SI_Liquid_Check.pm 001 2017-10-25 07:14:53 rm $
-# updated 28.10.2022 for Liquid-Check SM1 
+# updated 30.10.2022 for Liquid-Check SM1 
 #
 #  (c) 2017 Copyright: SI-Elektronik GmbH, Ronald Malkmus
 #  e-mail: liquid-check at si-elektronik dot de
@@ -33,8 +33,8 @@
 #  Polling interval between 10 - 86400 Sec. (default 300 sec.)
 #
 #
-#   Vers. 1.5   Einlesen der Raw Werte measure.raw.content, measure.raw.level
-#				Commandref aktualisiert
+#   Vers. 1.5.1w Einlesen der Raw Werte measure.raw.content, measure.raw.level
+#				 Commandref aktualisiert. Darstellung Einheit °C korrigiert
 #
 #	Vers. 1.4   Erweiterung Liquid-Check SM1 mit Schaltplatine 
 #				Temp.Sensor und Relais-Zustand auslesen
@@ -235,6 +235,21 @@ sub SI_Liquid_Check_ParseHttpResponse($)
 				}  
 			}
 		}
+		if (exists($json->{'payload'}->{'waterMeter'})) 
+		{
+			foreach my $key (sort keys %{$json->{'payload'}->{'waterMeter'}}) {
+			  if ($key ne 'flow' and $key ne 'pause') {
+   	    		readingsBulkUpdate($hash, 'waterMeter.'.$key, $json->{'payload'}->{'waterMeter'}->{$key});
+			  }	
+			}
+			foreach my $key (sort keys %{$json->{'payload'}->{'waterMeter'}->{'flow'}}) {
+   	    		readingsBulkUpdate($hash, 'wMeter.flow.'.$key, $json->{'payload'}->{'waterMeter'}->{'flow'}->{$key});
+			}
+			foreach my $key (sort keys %{$json->{'payload'}->{'waterMeter'}->{'pause'}}) {
+   	    		readingsBulkUpdate($hash, 'wMeter.pause.'.$key, $json->{'payload'}->{'waterMeter'}->{'pause'}->{$key});
+			}
+			#Log3 $hash, 3, "SI_Liquid_Check: $name parse1: ".@sensors_ow."\n";
+		}		
 
  	  	if (exists($json->{'payload'}->{'expansion'}->{'oneWire'}->{'sensors'})) 
 		{
@@ -245,8 +260,8 @@ sub SI_Liquid_Check_ParseHttpResponse($)
  				my $sensorName = trim($json->{'payload'}->{'expansion'}->{'oneWire'}->{'sensors'}->[$i]->{'friendlyName'});
   				my $sensorValue = $json->{'payload'}->{'expansion'}->{'oneWire'}->{'sensors'}->[$i]->{'temperature'};
 				if ($sensorName eq '') {$sensorName = $json->{'payload'}->{'expansion'}->{'oneWire'}->{'sensors'}->[$i]->{'romId'}}
-  				Log3 $hash, 4, "SI_Liquid_Check: $name sensor-$sensorName: $sensorValue C°";
-	    		readingsBulkUpdate($hash, "sensor-$sensorName", $sensorValue." C°");
+  				Log3 $hash, 4, "SI_Liquid_Check: $name sensor-$sensorName: $sensorValue °C";
+	    		readingsBulkUpdate($hash, "sensor-$sensorName", $sensorValue." °C");
 			  }
 			if ($i > 0){
 	    		readingsBulkUpdate($hash, ".sensor-aktive", 1);

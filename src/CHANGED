@@ -1,18 +1,8 @@
-  - feature:24_SI_Liquid_Check: version 1.5
+- feature: 24_SI_Liquid_Check: version 1.5.1
                Einlesen der Raw Werte measure.raw.content, measure.raw.level
-               Commandref aktualisiert 
+               Commandref aktualisiert, Darstellung Einheit °C korrigiert 
                
             24_SI_Liquid_Check: version 1.4
                Erweiterung Liquid-Check SM1 mit Schaltplatine, Temp.Sensor und Relais-Zustand auslesen
                Bug (Abruf bleibt stehen) beseitigt
-
-             24_SI_Liquid_Check: version 1.1
-               NEXTUPDATE in Readings verschoben u. angepasst
-               Neues Reading "nextupdtime", jede Readingänderung erzeugt einen Event
-               Neues Reading "last.measure.content", "last.measure.level"
-               Readings "round.measure.content" und "round.measure.level" entfernt
-               Standard State Icon geändert (ohne Überschrift)
-               SET-Befehl "messung_starten" für Messung aktivieren ergänzt
-               Neues Attribut "showTrend" für Darstellung einer Trendanzeige mit Pfeil
-               Verbesserte Aktualisierung bei Neustart
-               Hilfe aktualisiert
+               
