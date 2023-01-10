@@ -37,15 +37,15 @@ Des Weitern können beliebige Icons als StateIcon verwendet werde dessen Dateina
 **Adds an additional repository for simplified use of "Update" via the standard calls.**
 *Run the following commands in FHEM command-line to add this repository to your FHEM setup:*
 ```
-update add https://raw.githubusercontent.com/SI-ElektronikGmbH/Liquid-Check/master/src/controls_liquid_check.txt
+update add https://raw.githubusercontent.com/roma61/Liquid-Check/master/src/controls_liquid_check.txt
 update all liquid_check
 shutdown restart
 ```
 
 **One time update**
 ```
-update check https://raw.githubusercontent.com/SI-ElektronikGmbH/Liquid-Check/master/src/controls_liquid_check.txt
-update all https://raw.githubusercontent.com/SI-ElektronikGmbH/Liquid-Check/master/src/controls_liquid_check.txt
+update check https://raw.githubusercontent.com/roma61/Liquid-Check/master/src/controls_liquid_check.txt
+update all https://raw.githubusercontent.com/roma61/Liquid-Check/master/src/controls_liquid_check.txt
 shutdown restart
 ```
 

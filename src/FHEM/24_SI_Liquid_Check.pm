@@ -34,7 +34,7 @@
 #
 #
 #   Vers. 1.5.1w Einlesen der Raw Werte measure.raw.content, measure.raw.level
-#				Commandref aktualisiert. Darstellung Einheit °C korrigiert
+#				 Commandref aktualisiert. Darstellung Einheit °C korrigiert
 #
 #	Vers. 1.4   Erweiterung Liquid-Check SM1 mit Schaltplatine 
 #				Temp.Sensor und Relais-Zustand auslesen
