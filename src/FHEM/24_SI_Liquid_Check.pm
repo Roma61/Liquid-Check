@@ -33,7 +33,7 @@
 #  Polling interval between 10 - 86400 Sec. (default 300 sec.)
 #
 #
-#   Vers. 1.5.1 Einlesen der Raw Werte measure.raw.content, measure.raw.level
+#   Vers. 1.5.1w Einlesen der Raw Werte measure.raw.content, measure.raw.level
 #				Commandref aktualisiert. Darstellung Einheit °C korrigiert
 #
 #	Vers. 1.4   Erweiterung Liquid-Check SM1 mit Schaltplatine 
@@ -235,6 +235,21 @@ sub SI_Liquid_Check_ParseHttpResponse($)
 				}  
 			}
 		}
+		if (exists($json->{'payload'}->{'waterMeter'})) 
+		{
+			foreach my $key (sort keys %{$json->{'payload'}->{'waterMeter'}}) {
+			  if ($key ne 'flow' and $key ne 'pause') {
+   	    		readingsBulkUpdate($hash, 'waterMeter.'.$key, $json->{'payload'}->{'waterMeter'}->{$key});
+			  }	
+			}
+			foreach my $key (sort keys %{$json->{'payload'}->{'waterMeter'}->{'flow'}}) {
+   	    		readingsBulkUpdate($hash, 'wMeter.flow.'.$key, $json->{'payload'}->{'waterMeter'}->{'flow'}->{$key});
+			}
+			foreach my $key (sort keys %{$json->{'payload'}->{'waterMeter'}->{'pause'}}) {
+   	    		readingsBulkUpdate($hash, 'wMeter.pause.'.$key, $json->{'payload'}->{'waterMeter'}->{'pause'}->{$key});
+			}
+			#Log3 $hash, 3, "SI_Liquid_Check: $name parse1: ".@sensors_ow."\n";
+		}		
 
  	  	if (exists($json->{'payload'}->{'expansion'}->{'oneWire'}->{'sensors'})) 
 		{
